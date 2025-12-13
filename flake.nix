@@ -49,11 +49,6 @@
       })
     ];
 
-    # checks = self.packages;
-    # packages =
-    #   forAllSystems (system: pkgs: rec {
-    #   });
-
     mkNexusConfig = config: let
       # abstract node instance that stores all default values
       templateNode = let
