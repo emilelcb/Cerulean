@@ -36,8 +36,18 @@
         };
       };
   in rec {
-    # overlays.default = final: prev: {
-    # };
+    overlays = [
+      # deploy-rs is built from the flake input, not from nixpkgs!
+      # To take advantage of the nixpkgs binary cache,
+      # the deploy-rs package can be overwritten:
+      deploy-rs.overlays.default
+      (self: super: {
+        deploy-rs = {
+          inherit (super) deploy-rs;
+          lib = super.deploy-rs.lib;
+        };
+      })
+    ];
 
     # checks = self.packages;
     # packages =
@@ -45,24 +55,97 @@
     #   });
 
     mkNexusConfig = config: let
-      mapNodes = f: lib.mapAttrs f config.nexus.nodes;
+      # abstract node instance that stores all default values
+      templateNode = let
+        missing = msg: path:
+          builtins.abort ''
+            Each Cerulean Nexus node is required to specify ${msg}!
+            Ensure `cerulean.nexus.nodes.$${NODE}.${path}` exists under your call to `cerulean.mkNexus`.
+          '';
+      in
+        system: {
+          system = missing "its system type" "system"; # intentionally left missing!! (to raise errors)
+          modules = missing "its required modules" "modules";
+          specialArgs = {
+            inherit inputs;
+            pkgs = sys.pkgsFor system;
+            upkgs = sys.upkgsFor system;
+          };
+
+          deploy = {
+            user = "root";
+            sudo = "sudo -u";
+            interactiveSudo = false;
+
+            remoteBuild = false; # prefer local builds for remote deploys
+
+            autoRollback = true; # reactivate previous profile if activation fails
+            magicRollback = true;
+
+            activationTimeout = 500; # timeout in seconds for profile activation
+            confirmTimeout = 30; # timeout in seconds for profile activation confirmation
+
+            ssh = {
+              host = missing "an SSH hostname (domain name or ip address) for deployment" "deploy.ssh.host";
+              user = missing "an SSH username for deployment" "deploy.ssh.user";
+              port = 22;
+              opts = [];
+            };
+          };
+        };
+
+      parseNode = name: nodeAttrs:
+        if !(builtins.isAttrs nodeAttrs)
+        then
+          # fail if node is not an attribute set
+          builtins.abort ''
+            Cerulean Nexus nodes must be provided as an attribute set, got "${builtins.typeOf nodeAttrs}" instead!
+            Ensure all `cerulean.nexus.nodes.${name}` declarations are attribute sets under your call to `cerulean.mkNexus`.
+          ''
+        # TODO: nodeAttrs.system won't display any nice error messages!!
+        # TODO: will mergeTypedStruct give nice error messages? or should I use mergeStructErr directly?
+        else nib.parse.mergeTypedStruct (templateNode nodeAttrs.system) nodeAttrs;
+
+      mapNodes = f: lib.mapAttrs f (parseNode config.nexus.nodes);
     in rec {
       nixosConfigurations = mapNodes (
         name: node:
           lib.nixosSystem {
             system = node.system;
             modules = node.modules;
+
+            # nix passes these to every single module
+            specialArgs = [] // node.modules.specialArgs;
           }
       );
 
-      deploy.nodes = mapNodes (name: node: {
-        hostname = name;
-        profiles.system = {
-          user = "root";
-          path = let
-            system = node.system;
-          in
-            deploy-rs.lib.${system}.activate.nixos nixosConfigurations.${system};
+      deploy.nodes = mapNodes (nodeName: node: {
+        hostname = node.deploy.ssh.host;
+
+        profilesOrder = ["default"]; # profiles priority
+        profiles.default = {
+          path = deploy-rs.lib.${node.system}.activate.nixos nixosConfigurations.${node.system};
+
+          user = node.deploy.user;
+          sudo = node.deploy.sudo;
+          interactiveSudo = node.deploy.interactiveSudo;
+
+          fastConnection = false;
+
+          autoRollback = node.deploy.autoRollback;
+          magicRollback = node.deploy.magicRollback;
+          activationTimeout = node.deploy.activationTimeout;
+          confirmTimeout = node.deploy.confirmTimeout;
+
+          remoteBuild = node.deploy.remoteBuild;
+          sshUser = node.deploy.ssh.user;
+          sshOpts =
+            node.deploy.ssh.opts
+            ++ (
+              if builtins.elem "-p" node.deploy.ssh.opts
+              then []
+              else ["-p" (builtins.toString node.deploy.ssh.port)]
+            );
         };
       });
 
