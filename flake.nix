@@ -1,23 +1,15 @@
 {
   description = "Your Nix Cloud Simplified";
 
-  inputs = let
-    follows = following: {
-      inputs = builtins.listToAttrs (builtins.map (x: {
-          name = x;
-          value = {follows = x;};
-        })
-        following);
-    };
-  in {
+  inputs = {
     systems.url = "github:nix-systems/default";
 
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
 
     nib = {
-      url = "github:emileclarkb/nib";
-      inputs = follows ["systems"];
+      url = "github:emilelcb/nib";
+      inputs.systems.follows = "systems";
     };
 
     deploy-rs.url = "github:serokell/deploy-rs";
