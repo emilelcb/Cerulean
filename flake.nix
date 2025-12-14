@@ -51,43 +51,42 @@
 
     mkNexusConfig = config: let
       # abstract node instance that stores all default values
-      templateNode = let
+      templateNode = name: system: let
         missing = msg: path:
           builtins.abort ''
             Each Cerulean Nexus node is required to specify ${msg}!
-            Ensure `cerulean.nexus.nodes.$${NODE}.${path}` exists under your call to `cerulean.mkNexus`.
+            Ensure `cerulean.nexus.nodes.${name}.${path}` exists under your call to `cerulean.mkNexus`.
           '';
-      in
-        system: {
-          system = missing "its system type" "system"; # intentionally left missing!! (to raise errors)
-          modules = missing "its required modules" "modules";
-          specialArgs = {
-            inherit inputs;
-            pkgs = sys.pkgsFor system;
-            upkgs = sys.upkgsFor system;
-          };
+      in {
+        system = missing "its system type" "system"; # intentionally left missing!! (to raise errors)
+        modules = missing "its required modules" "modules";
+        specialArgs = {
+          inherit inputs;
+          pkgs = sys.pkgsFor system;
+          upkgs = sys.upkgsFor system;
+        };
 
-          deploy = {
-            user = "root";
-            sudo = "sudo -u";
-            interactiveSudo = false;
+        deploy = {
+          user = "root";
+          sudo = "sudo -u";
+          interactiveSudo = false;
 
-            remoteBuild = false; # prefer local builds for remote deploys
+          remoteBuild = false; # prefer local builds for remote deploys
 
-            autoRollback = true; # reactivate previous profile if activation fails
-            magicRollback = true;
+          autoRollback = true; # reactivate previous profile if activation fails
+          magicRollback = true;
 
-            activationTimeout = 500; # timeout in seconds for profile activation
-            confirmTimeout = 30; # timeout in seconds for profile activation confirmation
+          activationTimeout = 500; # timeout in seconds for profile activation
+          confirmTimeout = 30; # timeout in seconds for profile activation confirmation
 
-            ssh = {
-              host = missing "an SSH hostname (domain name or ip address) for deployment" "deploy.ssh.host";
-              user = missing "an SSH username for deployment" "deploy.ssh.user";
-              port = 22;
-              opts = [];
-            };
+          ssh = {
+            host = missing "an SSH hostname (domain name or ip address) for deployment" "deploy.ssh.host";
+            user = missing "an SSH username for deployment" "deploy.ssh.user";
+            port = 22;
+            opts = [];
           };
         };
+      };
 
       parseNode = name: nodeAttrs:
         if !(builtins.isAttrs nodeAttrs)
@@ -99,7 +98,7 @@
           ''
         # TODO: nodeAttrs.system won't display any nice error messages!!
         # TODO: will mergeTypedStruct give nice error messages? or should I use mergeStructErr directly?
-        else nib.parse.mergeTypedStruct (templateNode nodeAttrs.system) nodeAttrs;
+        else nib.parse.mergeTypedStruct (templateNode name nodeAttrs.system) nodeAttrs;
 
       # TODO: mapNodes = f: builtins.mapAttrs (name: nodeAttrs: f name (parseNode name nodeAttrs)) config.nexus.nodes
       mapNodes = f: builtins.mapAttrs f (builtins.mapAttrs parseNode config.nexus.nodes);
