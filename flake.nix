@@ -112,7 +112,7 @@
             modules = node.modules;
 
             # nix passes these to every single module
-            specialArgs = [] // node.modules.specialArgs;
+            specialArgs = {} // node.modules.specialArgs;
           }
       );
 
