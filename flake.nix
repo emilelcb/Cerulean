@@ -112,17 +112,8 @@
           ''
         else let
           templateAttrs = templateNode name nodeAttrs.system;
-          S = nib.parse.parseStructFor templateAttrs nodeAttrs;
         in
-          nib.types.unwrapOk (res:
-            if nib.types.isRes res
-            then
-              abort ''
-                Cerulean failed to parse `cerulean.nexus.nodes.${name}`!
-                mergeStruct should never return `result.Err`... How are you here?!?
-              ''
-            else abort "huh wtf ${builtins.typeOf res} +AND-THEN+ ${builtins.toJSON res}")
-          S;
+          nib.parse.parseStructFor templateAttrs nodeAttrs;
 
       # mapNodes = f: builtins.mapAttrs f (builtins.mapAttrs parseNode config.nexus.nodes);
       mapNodes = f:
