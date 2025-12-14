@@ -110,21 +110,23 @@
             Cerulean Nexus nodes must be provided as an attribute set, got "${builtins.typeOf nodeAttrs}" instead!
             Ensure all `cerulean.nexus.nodes.${name}` declarations are attribute sets under your call to `cerulean.mkNexus`.
           ''
-        # TODO: nodeAttrs.system won't display any nice error messages!!
-        # TODO: will mergeTypedStruct give nice error messages? or should I use mergeStructErr directly?
         else let
           templateAttrs = templateNode name nodeAttrs.system;
           S = nib.parse.parseStructFor templateAttrs nodeAttrs;
         in
-          nib.types.unwrapRes (_:
+          nib.types.unwrapOk (_:
             abort ''
               Cerulean failed to parse `cerulean.nexus.nodes.${name}`!
               mergeStruct should never return `result.Err`... How are you here?!?
             '')
           S;
 
-      # TODO: mapNodes = f: mapAttrs (name: nodeAttrs: f name (parseNode name nodeAttrs)) config.nexus.nodes
-      mapNodes = f: builtins.mapAttrs f (builtins.mapAttrs parseNode config.nexus.nodes);
+      # mapNodes = f: builtins.mapAttrs f (builtins.mapAttrs parseNode config.nexus.nodes);
+      mapNodes = f:
+        builtins.mapAttrs (
+          name: nodeAttrs: f name (parseNode name nodeAttrs)
+        )
+        config.nexus.nodes;
     in rec {
       nixosConfigurations = mapNodes (
         _: node:
