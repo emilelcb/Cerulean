@@ -101,9 +101,11 @@
         # TODO: will mergeTypedStruct give nice error messages? or should I use mergeStructErr directly?
         else nib.parse.mergeTypedStruct (templateNode nodeAttrs.system) nodeAttrs;
 
-      mapNodes = f: lib.mapAttrs f (parseNode config.nexus.nodes);
+      # TODO: mapNodes = f: builtins.mapAttrs (name: nodeAttrs: f name (parseNode name nodeAttrs)) config.nexus.nodes
+      mapNodes = f: builtins.mapAttrs f (builtins.mapAttrs parseNode config.nexus.nodes);
     in rec {
       nixosConfigurations = mapNodes (
+        # TODO: _: node:
         name: node:
           lib.nixosSystem {
             system = node.system;
@@ -114,6 +116,7 @@
           }
       );
 
+      # TODO: deploy.nodes = mapNodes (_: node: {
       deploy.nodes = mapNodes (nodeName: node: {
         hostname = node.deploy.ssh.host;
 
