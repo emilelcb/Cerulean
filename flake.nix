@@ -102,7 +102,7 @@
           templateAttrs = templateNode name nodeAttrs.system;
           r = nib.parse.mergeStruct templateAttrs nodeAttrs;
         in
-          nib.result.unwrapRes (_:
+          nib.types.unwrapRes (_:
             builtins.abort ''
               Cerulean failed to parse `cerulean.nexus.nodes.${name}`!
               mergeStruct should never return `result.Err`... How are you here?!?
