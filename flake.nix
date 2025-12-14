@@ -75,10 +75,10 @@
         in {
           system = missing "its system type" "system"; # intentionally left missing!! (to raise errors)
           modules = missing "its required modules" "modules";
-          specialArgs = {
+          specialArgs = Terminal {
             inherit inputs;
-            pkgs = Terminal (sys.pkgsFor system);
-            upkgs = Terminal (sys.upkgsFor system);
+            pkgs = sys.pkgsFor system;
+            upkgs = sys.upkgsFor system;
           };
 
           deploy = {
