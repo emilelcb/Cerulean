@@ -43,11 +43,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1765721644,
-        "narHash": "sha256-l4uoz89w+CaaY7vXWMGlxGPavEf/dNh6+hMIwPA3Mxk=",
+        "lastModified": 1765722258,
+        "narHash": "sha256-qvH1BMbwLRhbWE9pxDZvA/1G/4cO8v0dGZXSF4M8fW0=",
         "owner": "emilelcb",
         "repo": "nib",
-        "rev": "1ae1301a144ac1f74c8cc2fc5a75803132e7858f",
+        "rev": "c1cb233c8f37dd555cfcd3e6b5a18256fb9cd06b",
         "type": "github"
       },
       "original": {
