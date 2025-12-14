@@ -36,7 +36,8 @@
     deploy-rs,
     ...
   } @ inputs:
-    with builtins; let
+    with builtins;
+    with nib.types; let
       lib = nixpkgs.lib;
 
       sys = with nib;
@@ -67,17 +68,17 @@
         # abstract node instance that stores all default values
         templateNode = name: system: let
           missing = msg: path:
-            abort ''
+            Terminal (abort ''
               Each Cerulean Nexus node is required to specify ${msg}!
               Ensure `cerulean.nexus.nodes.${name}.${path}` exists under your call to `cerulean.mkNexus`.
-            '';
+            '');
         in {
           system = missing "its system type" "system"; # intentionally left missing!! (to raise errors)
           modules = missing "its required modules" "modules";
           specialArgs = {
             inherit inputs;
-            pkgs = sys.pkgsFor system;
-            upkgs = sys.upkgsFor system;
+            pkgs = Terminal (sys.pkgsFor system);
+            upkgs = Terminal (sys.upkgsFor system);
           };
 
           deploy = {
@@ -114,14 +115,14 @@
           # TODO: will mergeTypedStruct give nice error messages? or should I use mergeStructErr directly?
           else let
             templateAttrs = templateNode name nodeAttrs.system;
-            r = nib.parse.mergeStruct templateAttrs nodeAttrs;
+            S = nib.parse.parseStructFor templateAttrs nodeAttrs;
           in
-            nib.types.unwrapRes (_:
+            unwrapRes (_:
               abort ''
                 Cerulean failed to parse `cerulean.nexus.nodes.${name}`!
                 mergeStruct should never return `result.Err`... How are you here?!?
               '')
-            r;
+            S;
 
         # TODO: mapNodes = f: mapAttrs (name: nodeAttrs: f name (parseNode name nodeAttrs)) config.nexus.nodes
         mapNodes = f: mapAttrs f (mapAttrs parseNode config.nexus.nodes);
