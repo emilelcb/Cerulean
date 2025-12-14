@@ -98,7 +98,16 @@
           ''
         # TODO: nodeAttrs.system won't display any nice error messages!!
         # TODO: will mergeTypedStruct give nice error messages? or should I use mergeStructErr directly?
-        else nib.parse.mergeStruct (templateNode name nodeAttrs.system) nodeAttrs;
+        else let
+          templateAttrs = templateNode name nodeAttrs.system;
+          r = nib.parse.mergeStruct templateAttrs nodeAttrs;
+        in
+          nib.result.unwrap (_:
+            builtins.abort ''
+              Cerulean failed to parse `cerulean.nexus.nodes.${name}`!
+              mergeStruct should never return `result.Err`... How are you here?!?
+            '')
+          r;
 
       # TODO: mapNodes = f: builtins.mapAttrs (name: nodeAttrs: f name (parseNode name nodeAttrs)) config.nexus.nodes
       mapNodes = f: builtins.mapAttrs f (builtins.mapAttrs parseNode config.nexus.nodes);
