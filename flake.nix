@@ -74,11 +74,7 @@
       in {
         system = missing "its system type" "system"; # intentionally left missing!! (to raise errors)
         modules = missing "its required modules" "modules";
-        specialArgs = Terminal {
-          inherit inputs;
-          pkgs = sys.pkgsFor system;
-          upkgs = sys.upkgsFor system;
-        };
+        specialArgs = Terminal {};
 
         deploy = {
           user = "root";
@@ -113,32 +109,39 @@
         else let
           templateAttrs = templateNode name nodeAttrs.system;
         in
-          nib.parse.parseStructFor templateAttrs nodeAttrs;
+          nib.parse.mergeStructs templateAttrs nodeAttrs;
 
       # mapNodes = f: builtins.mapAttrs f (builtins.mapAttrs parseNode config.nexus.nodes);
       mapNodes = f:
-        builtins.mapAttrs (
-          name: nodeAttrs: f name (parseNode name nodeAttrs)
-        )
+        builtins.mapAttrs
+        (nodeName: nodeAttrs: f nodeName (parseNode nodeName nodeAttrs))
         config.nexus.nodes;
     in rec {
       nixosConfigurations = mapNodes (
-        _: node:
+        nodeName: node:
           lib.nixosSystem {
             system = node.system;
             modules = node.modules;
 
             # nix passes these to every single module
-            specialArgs = {} // node.modules.specialArgs;
+            specialArgs =
+              node.modules.specialArgs
+              // {
+                inherit inputs;
+                pkgs = sys.pkgsFor node.system;
+                upkgs = sys.upkgsFor node.system;
+              };
           }
       );
 
-      deploy.nodes = mapNodes (_: node: {
+      deploy.nodes = mapNodes (nodeName: node: let
+        nixosFor = system: deploy-rs.lib.${system}.activate.nixos;
+      in {
         hostname = node.deploy.ssh.host;
 
         profilesOrder = ["default"]; # profiles priority
         profiles.default = {
-          path = deploy-rs.lib.${node.system}.activate.nixos nixosConfigurations.${node.system};
+          path = nixosFor node.system nixosConfigurations.${nodeName};
 
           user = node.deploy.user;
           sudo = node.deploy.sudo;
