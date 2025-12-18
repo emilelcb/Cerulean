@@ -44,13 +44,16 @@
       },
       "locked": {
         "lastModified": 1766026109,
-        "narHash": "sha256-z4u9D+rWnvzEQRjUmxoGS1wA0/+hEU09Qk6H1WpFn64=",
-        "path": "/home/emile/nib",
-        "type": "path"
+        "narHash": "sha256-CcaDBnaHtFApR66IeFzB41+ENfVZzey32DAMLMrBvKU=",
+        "owner": "emilelcb",
+        "repo": "nib",
+        "rev": "df8f10c468a532676fbb5099e7c4f61368385bd8",
+        "type": "github"
       },
       "original": {
-        "path": "/home/emile/nib",
-        "type": "path"
+        "owner": "emilelcb",
+        "repo": "nib",
+        "type": "github"
       }
     },
     "nixpkgs": {

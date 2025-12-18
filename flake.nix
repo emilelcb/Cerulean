@@ -21,7 +21,7 @@
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
 
     nib = {
-      url = "path:/home/emile/nib";
+      url = "github:emilelcb/nib";
       inputs.systems.follows = "systems";
     };
 
