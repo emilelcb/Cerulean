@@ -119,20 +119,19 @@
     in rec {
       nixosConfigurations = mapNodes (
         nodeName: node:
-          assert false || abort "DEBUG: node has type ${builtins.typeOf node}";
-            lib.nixosSystem {
-              system = node.system;
-              modules = node.modules;
+          lib.nixosSystem {
+            system = node.system;
+            modules = node.modules;
 
-              # nix passes these to every single module
-              specialArgs =
-                node.modules.specialArgs
-                // {
-                  inherit inputs;
-                  pkgs = sys.pkgsFor node.system;
-                  upkgs = sys.upkgsFor node.system;
-                };
-            }
+            # nix passes these to every single module
+            specialArgs =
+              node.modules.specialArgs
+              // {
+                inherit inputs;
+                pkgs = sys.pkgsFor node.system;
+                upkgs = sys.upkgsFor node.system;
+              };
+          }
       );
 
       deploy.nodes = mapNodes (nodeName: node: let
