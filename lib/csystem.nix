@@ -57,9 +57,17 @@ in {
   ];
 
   nix.settings = {
+    # REF: https://nix.dev/manual/nix/2.24/development/experimental-features
     experimental-features = [
-      "nix-command"
+      # Significant
       "flakes"
+      "nix-command"
+      "pipe-operators"
+
+      # Minor
+      "no-url-literals"
+      "parse-toml-timestamps"
+      "recursive-nix"
     ];
 
     download-buffer-size = 524288000; # 500 MiB
