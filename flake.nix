@@ -125,7 +125,7 @@
 
             # nix passes these to every single module
             specialArgs =
-              node.modules.specialArgs
+              node.specialArgs
               // {
                 inherit inputs;
                 pkgs = sys.pkgsFor node.system;
