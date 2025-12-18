@@ -162,6 +162,11 @@
               if builtins.elem "-p" node.deploy.ssh.opts
               then []
               else ["-p" (toString node.deploy.ssh.port)]
+            )
+            ++ (
+              if builtins.elem "-A" node.deploy.ssh.opts
+              then []
+              else ["-A"]
             );
         };
       });
