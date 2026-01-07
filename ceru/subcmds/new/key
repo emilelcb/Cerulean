@@ -1,0 +1,100 @@
+#!/usr/bin/env bash
+set -euo pipefail
+USAGE="${BOLD}${UNDERLINE}${RED}Usage${RESET}
+	${BOLD}${GREEN}$THIS new key [option...]${RESET}
+
+${BOLD}${UNDERLINE}${RED}Options${RESET}
+	${BOLD}${MAGENTA}-h, --help${RESET}               Show this message (^_^)
+	${BOLD}${MAGENTA}-f, --force${RESET}              Ignores all warnings!!
+	${BOLD}${MAGENTA}-j, --json${RESET}               Output in JSON format
+	${BOLD}${MAGENTA}-n, --name${RESET}               Identifier of the key (e.g. ${BOLD}${MAGENTA}cache.example.org-1${RESET})
+	${BOLD}${MAGENTA}-o, --out${RESET}                Private key file name to write to (the public key is named identically but ends with ${BOLD}${MAGENTA}.pub${RESET})
+	${BOLD}${MAGENTA}-P, --private-only${RESET}       Only generate the private key, not the entire keypair"
+
+# ==== Argument Values ====
+FORCE=false
+PRIV_ONLY=false
+JSON=false
+NAME=""
+SINK=""
+# ==== Argument Values ====
+
+# parse all args
+while [[ $# -gt 0 ]]; do
+	ARG="$1"
+	case "$ARG" in
+		-h|--help)
+			throw-usage 0
+			;;
+		-n|--name)
+			shift
+			# XXX: NOTE: do I need to safe shift (shift || true) since -e is set?
+			NAME="$1"; shift
+			;;
+		-P|--private-only)
+			shift
+			PRIV_ONLY=true
+			;;
+		-o|--out)
+			shift
+			# XXX: NOTE: do I need to safe shift (shift || true) since -e is set?
+			SINK="$1"; shift
+			;;
+		-j|--json)
+			shift
+			JSON=true
+			;;
+		-f|--force)
+			shift
+			FORCE=true
+			;;
+			
+		-*)
+			throw-badflag 1 "$ARG"
+			;;
+		*)
+			throw-badarg 1 "$ARG"
+		  ;;
+	esac
+done; unset -v ARG
+
+# fail if NAME not provided
+required "$NAME" --name
+
+
+# generate our keypair
+PRIV_KEY=$(nix key generate-secret --key-name "$NAME")
+PUB_KEY=$(nix key convert-secret-to-public <<<"$PRIV_KEY")
+
+# result defaults to unset (only stays unset if we intend on writing to a file)
+RESULT=""
+# JSON formatting
+if [[ "$JSON" = true ]]; then
+	RESULT="{
+  \"privateKey\": \"${PRIV_KEY}\"$(
+	[[ "$PRIV_ONLY" = true ]] \
+		|| echo ",\n  \"publicKey\": \"${PUB_KEY}\"")
+}"
+	if [[ -n "$SINK" ]]; then
+		# confirm the user understands files will be overwritten
+		[[ "$FORCE" = true ]] || confirm-file-overwrite "$SINK" || exit 0
+		echo -e "$RESULT" > "$SINK"
+	else
+		echo -e "$RESULT"
+	fi
+# standard formatting (stdout)
+elif [[ -z "$SINK" ]]; then
+	echo -e "${BOLD}${UNDERLINE}${RED}Private Key${RESET}
+	${BOLD}${GREEN}${PRIV_KEY}${RESET}$(
+	[[ "$PRIV_ONLY" = true ]] \
+		|| echo "\n${BOLD}${UNDERLINE}${RED}Public Key${RESET}\n	${BOLD}${GREEN}${PUB_KEY}${RESET}")" 
+# standard formatting (files)
+else
+	PRIV_SINK="$SINK"
+	PUB_SINK="$SINK.pub"
+	# confirm the user understands files will be overwritten
+	[[ "$FORCE" = true ]] || confirm-file-overwrite "$PRIV_SINK" "$PUB_SINK" || exit 0
+	echo "$PRIV_KEY" > "$PRIV_SINK"
+	echo "$PUB_KEY" > "$PUB_SINK"
+fi;
+unset -v PRIV_SINK PUB_SINK PRIV_KEY PUB_KEY RESULT
