@@ -48,7 +48,6 @@ while [[ $# -gt 0 ]]; do
 			shift
 			FORCE=true
 			;;
-			
 		-*)
 			throw-badflag 1 "$ARG"
 			;;

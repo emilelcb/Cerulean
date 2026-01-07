@@ -68,12 +68,20 @@ function confirm-action {
 function confirm { confirm-action ":: Proceed? [Y/n]  "; }
 
 function confirm-file-overwrite {
-  echo -e "${BOLD}${UNDERLINE}${BLINKFAST}${RED}WARNING!${RESET} ${YELLOW}The following files will be overwritten:${RESET}"
-  local ARG=""
+  local OVERWRITE=false
+  local ARG
   for ARG in "$@"; do
-    echo -e "${BOLD}	• ${GREEN}${ARG}${RESET}"
+    if [[ -f "$ARG" ]]; then
+      # write info (initial) lines on first overwritable file found
+      if [[ "$OVERWRITE" = false ]]; then
+        echo -e "${BOLD}${UNDERLINE}${BLINKFAST}${RED}WARNING!${RESET} ${YELLOW}The following files will be overwritten:${RESET}"
+        OVERWRITE=true
+      fi
+      # list all files that require overwriting
+      echo -e "${BOLD}	• ${GREEN}${ARG}${RESET}"
+    fi
   done 
-	confirm
+	[[ "$OVERWRITE" = false ]] || confirm
 }
 
 # ====== Core ======
