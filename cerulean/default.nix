@@ -11,10 +11,26 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-{mix, ...} @ inputs:
+{
+  mix,
+  deploy-rs,
+  ...
+} @ inputs:
 mix.mkMod (mix.newMixture {specialArgs = inputs;})
 (mixture: {
   includes.public = [
     ./flake-config
+  ];
+
+  overlays = [
+    # build deploy-rs as a package not from the flake input,
+    # hence we can rely on a nixpkg binary cache.
+    deploy-rs.overlays.default
+    (self: super: {
+      deploy-rs = {
+        inherit (super) deploy-rs;
+        lib = super.deploy-rs.lib;
+      };
+    })
   ];
 })

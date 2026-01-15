@@ -35,10 +35,12 @@
     nixpkgs,
     nixpkgs-unstable,
     nib,
-    deploy-rs,
     ...
   } @ inputs: let
-    lib = nixpkgs.lib;
+    inherit
+      (nixpkgs)
+      lib
+      ;
 
     sys = nib.mkUSys {
       pkgs = nib.withPkgs nixpkgs {
@@ -49,19 +51,6 @@
         config.allowUnfree = false;
       };
     };
-
-    cerulean = import ./cerulean {inherit inputs lib sys;};
-  in {
-    overlays = [
-      # build deploy-rs as a package not from the flake input,
-      # hence we can rely on a nixpkg binary cache.
-      deploy-rs.overlays.default
-      (self: super: {
-        deploy-rs = {
-          inherit (super) deploy-rs;
-          lib = super.deploy-rs.lib;
-        };
-      })
-    ];
-  };
+  in
+    import ./cerulean <| inputs // {inherit lib sys;};
 }
