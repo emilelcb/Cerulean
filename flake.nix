@@ -21,11 +21,13 @@
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
 
     nib = {
-      url = "github:emilelcb/nib";
+      # url = "github:emilelcb/nib";
+      url = "/home/me/agribit/nexus/nib";
       inputs.systems.follows = "systems";
     };
 
-    mix.url = "github:emilelcb/mix";
+    # mix.url = "github:emilelcb/mix";
+    mix.url = "/home/me/agribit/nexus/mix";
 
     deploy-rs.url = "github:serokell/deploy-rs";
   };
