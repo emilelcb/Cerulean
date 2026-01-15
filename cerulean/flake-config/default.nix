@@ -14,7 +14,7 @@
 {mix, ...} @ inputs:
 mix.newMixture inputs (mixture: {
   includes.public = [
-    ./nodes
-    ./nexus
+    ./nodes.nix
+    ./nexus.nix
   ];
 })

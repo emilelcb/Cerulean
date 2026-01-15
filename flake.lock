@@ -43,8 +43,8 @@
         ]
       },
       "locked": {
-        "lastModified": 1768453675,
-        "narHash": "sha256-KirWmGJS37nZ8Ub64gUb/iHGMiwrp83DHYgRIujFOgw=",
+        "lastModified": 1768454163,
+        "narHash": "sha256-slX94aaVtdt6bFWpxAizjxM09LMtgXyMM04MYb5Ep/o=",
         "path": "/home/me/agribit/nexus/mix",
         "type": "path"
       },
@@ -60,8 +60,8 @@
         ]
       },
       "locked": {
-        "lastModified": 1768453677,
-        "narHash": "sha256-PccWYqS05ZPEG2tA+u0CxgQK1ikt9FKX515yr2LljG0=",
+        "lastModified": 1768454172,
+        "narHash": "sha256-i5f2nUwui50Ryo43gNtN1OXzp9YtZ3guT8VnbzmF18Y=",
         "path": "/home/me/agribit/nexus/nib",
         "type": "path"
       },
