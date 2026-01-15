@@ -46,36 +46,49 @@
     );
 
     deploy.nodes = mapNodes (nodeName: node: let
+      inherit
+        (node.deploy)
+        activationTimeout
+        autoRollback
+        confirmTimeout
+        interactiveSudo
+        magicRollback
+        remoteBuild
+        ssh
+        sudo
+        user
+        ;
+
       nixosFor = system: deploy-rs.lib.${system}.activate.nixos;
     in {
-      hostname = node.deploy.ssh.host;
+      hostname = ssh.host;
 
       profilesOrder = ["default"]; # profiles priority
       profiles.default = {
         path = nixosFor node.system nixosConfigurations.${nodeName};
 
-        user = node.deploy.user;
-        sudo = node.deploy.sudo;
-        interactiveSudo = node.deploy.interactiveSudo;
+        user = user;
+        sudo = sudo;
+        interactiveSudo = interactiveSudo;
 
         fastConnection = false;
 
-        autoRollback = node.deploy.autoRollback;
-        magicRollback = node.deploy.magicRollback;
-        activationTimeout = node.deploy.activationTimeout;
-        confirmTimeout = node.deploy.confirmTimeout;
+        autoRollback = autoRollback;
+        magicRollback = magicRollback;
+        activationTimeout = activationTimeout;
+        confirmTimeout = confirmTimeout;
 
-        remoteBuild = node.deploy.remoteBuild;
-        sshUser = node.deploy.ssh.user;
+        remoteBuild = remoteBuild;
+        sshUser = ssh.user;
         sshOpts =
-          node.deploy.ssh.opts
+          ssh.opts
           ++ (
-            if builtins.elem "-p" node.deploy.ssh.opts
+            if builtins.elem "-p" ssh.opts
             then []
-            else ["-p" (toString node.deploy.ssh.port)]
+            else ["-p" (toString ssh.port)]
           )
           ++ (
-            if builtins.elem "-A" node.deploy.ssh.opts
+            if builtins.elem "-A" ssh.opts
             then []
             else ["-A"]
           );
