@@ -23,17 +23,12 @@
     mapNodes
     ;
 
-  inherit
-    (lib)
-    nixosSystem
-    ;
-
   mkNexus' = config: rec {
     nixosConfigurations = mapNodes (
       nodeName: node:
-        nixosSystem {
+        lib.nixosSystem {
           system = node.system;
-          modules = node.modules;
+          modules = [./hosts/${nodeName}] ++ node.extraModules;
 
           # nix passes these to every single module
           specialArgs =
