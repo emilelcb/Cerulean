@@ -62,7 +62,7 @@
     in
       nib.parse.overrideStruct templateAttrs nodeAttrs;
 
-  mapNodes' = f:
+  mapNodes = f:
     builtins.mapAttrs
     (nodeName: nodeAttrs: f nodeName (parseNode nodeName nodeAttrs));
 }
