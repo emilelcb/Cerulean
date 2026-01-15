@@ -24,7 +24,7 @@
     ;
 
   mkNexus' = config: rec {
-    nixosConfigurations = mapNodes (
+    nixosConfigurations = mapNodes config.nexus.nodes (
       nodeName: node:
         lib.nixosSystem {
           system = node.system;
@@ -40,7 +40,7 @@
         }
     );
 
-    deploy.nodes = mapNodes (nodeName: node: let
+    deploy.nodes = mapNodes config.nexus.nodes (nodeName: node: let
       inherit
         (node.deploy)
         activationTimeout
