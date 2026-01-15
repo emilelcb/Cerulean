@@ -25,6 +25,8 @@
       inputs.systems.follows = "systems";
     };
 
+    mix.url = "github:emilelcb/mix";
+
     deploy-rs.url = "github:serokell/deploy-rs";
   };
 
