@@ -69,7 +69,7 @@ in rec {
     in
       nib.parse.overrideStruct templateAttrs nodeAttrs;
 
-  mapNodes = f:
-    mapAttrs
-    (nodeName: nodeAttrs: f nodeName (parseNode nodeName nodeAttrs));
+  mapNodes = nodes: f:
+    nodes
+    |> mapAttrs (nodeName: nodeAttrs: f nodeName (parseNode nodeName nodeAttrs));
 }
