@@ -11,7 +11,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-{nib, ...}: rec {
+{nib, ...}: let
+  inherit
+    (builtins)
+    isAttrs
+    mapAttrs
+    typeOf
+    ;
+in rec {
   # abstract node instance that stores all default values
   templateNode = name: system: let
     Terminal = nib.types.Terminal;
@@ -50,11 +57,11 @@
   };
 
   parseNode = name: nodeAttrs:
-    if !(builtins.isAttrs nodeAttrs)
+    if !(isAttrs nodeAttrs)
     then
       # fail if node is not an attribute set
       abort ''
-        Cerulean Nexus nodes must be provided as an attribute set, got "${builtins.typeOf nodeAttrs}" instead!
+        Cerulean Nexus nodes must be provided as an attribute set, got "${typeOf nodeAttrs}" instead!
         Ensure all `cerulean.nexus.nodes.${name}` declarations are attribute sets under your call to `cerulean.mkNexus`.
       ''
     else let
@@ -63,6 +70,6 @@
       nib.parse.overrideStruct templateAttrs nodeAttrs;
 
   mapNodes = f:
-    builtins.mapAttrs
+    mapAttrs
     (nodeName: nodeAttrs: f nodeName (parseNode nodeName nodeAttrs));
 }
