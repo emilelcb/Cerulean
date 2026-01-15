@@ -19,6 +19,13 @@
   ...
 }: let
   inherit
+    (builtins)
+    elem
+    mapAttrs
+    pathExists
+    ;
+
+  inherit
     (this)
     mapNodes
     ;
@@ -28,7 +35,14 @@
       nodeName: node:
         lib.nixosSystem {
           system = node.system;
-          modules = [./hosts/${nodeName}] ++ node.extraModules;
+          modules = let
+            core' = config.root + "/hosts/${nodeName}";
+            core =
+              if pathExists core'
+              then core'
+              else core' + ".nix";
+          in
+            [core] ++ node.extraModules;
 
           # nix passes these to every single module
           specialArgs =
@@ -78,19 +92,19 @@
         sshOpts =
           ssh.opts
           ++ (
-            if builtins.elem "-p" ssh.opts
+            if elem "-p" ssh.opts
             then []
             else ["-p" (toString ssh.port)]
           )
           ++ (
-            if builtins.elem "-A" ssh.opts
+            if elem "-A" ssh.opts
             then []
             else ["-A"]
           );
       };
     });
 
-    checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks deploy) deploy-rs.lib;
+    checks = mapAttrs (system: deployLib: deployLib.deployChecks deploy) deploy-rs.lib;
   };
 in {
   mkNexus = outputs:
