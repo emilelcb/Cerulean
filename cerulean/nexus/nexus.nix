@@ -56,7 +56,7 @@
   };
 
   parseNexus = nexus:
-    if !(isAttrs nexus)
+    if ! isAttrs nexus
     then
       abort ''
         Cerulean Nexus config must be provided as an attribute set, got "${typeOf nexus}" instead!
