@@ -16,8 +16,7 @@
   deploy-rs,
   ...
 } @ inputs:
-mix.mkMod (mix.newMixture {specialArgs = inputs;})
-(mixture: {
+mix.newMixture inputs (mixture: {
   includes.public = [
     ./flake-config
   ];
