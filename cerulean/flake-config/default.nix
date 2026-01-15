@@ -11,13 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-{
-  mix,
-  mixture,
-  ...
-}:
-mix.mkMod mixture
-(mixture: {
+{mix, ...} @ inputs:
+mix.newMixture inputs (mixture: {
   includes.public = [
     ./nodes
     ./nexus
