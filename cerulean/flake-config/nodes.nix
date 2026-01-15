@@ -60,7 +60,7 @@
     else let
       templateAttrs = templateNode name nodeAttrs.system;
     in
-      nib.parse.mergeStructs templateAttrs nodeAttrs;
+      nib.parse.overrideStruct templateAttrs nodeAttrs;
 
   mapNodes' = f:
     builtins.mapAttrs
