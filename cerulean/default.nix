@@ -18,7 +18,7 @@
 } @ inputs:
 mix.newMixture inputs (mixture: {
   includes.public = [
-    ./flake-config
+    ./nexus
   ];
 
   overlays = [
