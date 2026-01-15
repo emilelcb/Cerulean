@@ -14,6 +14,7 @@
 {
   this,
   sys,
+  nib,
   lib,
   deploy-rs,
   ...
@@ -21,8 +22,10 @@
   inherit
     (builtins)
     elem
+    isAttrs
     mapAttrs
     pathExists
+    typeOf
     ;
 
   inherit
@@ -30,19 +33,52 @@
     mapNodes
     ;
 
-  mkNexus' = config: rec {
-    nixosConfigurations = mapNodes config.nexus.nodes (
+  inherit
+    (nib.std)
+    getAttrOr
+    ;
+
+  templateNexus = let
+    inherit
+      (nib.types)
+      Terminal
+      ;
+
+    missing = msg: path:
+      Terminal (abort ''
+        Each Cerulean Nexus node is required to specify ${msg}!
+        Ensure `nexus.${path}` exists under your call to `cerulean.mkNexus`.
+      '');
+  in {
+    root = missing "the root directory for all cerulean nix modules." "root";
+    groups = missing "an list of all valid node group names." "groups";
+    nodes = Terminal {};
+  };
+
+  parseNexus = nexus:
+    if !(isAttrs nexus)
+    then
+      abort ''
+        Cerulean Nexus config must be provided as an attribute set, got "${typeOf nexus}" instead!
+        Ensure all the `nexus` declaration is an attribute set under your call to `cerulean.mkNexus`.
+      ''
+    else nib.parse.overrideStruct templateNexus nexus;
+
+  mkNexus' = nexus': let
+    nexus = parseNexus nexus';
+  in rec {
+    nixosConfigurations = mapNodes nexus.nodes (
       nodeName: node:
         lib.nixosSystem {
           system = node.system;
           modules = let
-            core' = config.root + "/hosts/${nodeName}";
+            core' = nexus.root + "/hosts/${nodeName}";
             core =
               if pathExists core'
               then core'
               else core' + ".nix";
           in
-            [core] ++ node.extraModules;
+            [core ../nixos-module] ++ node.extraModules;
 
           # nix passes these to every single module
           specialArgs =
@@ -54,7 +90,7 @@
         }
     );
 
-    deploy.nodes = mapNodes config.nexus.nodes (nodeName: node: let
+    deploy.nodes = mapNodes nexus.nodes (nodeName: node: let
       inherit
         (node.deploy)
         activationTimeout
@@ -107,6 +143,9 @@
     checks = mapAttrs (system: deployLib: deployLib.deployChecks deploy) deploy-rs.lib;
   };
 in {
-  mkNexus = outputs:
-    (mkNexus' outputs.cerulean) // (removeAttrs outputs ["cerulean"]);
+  mkNexus = outputs': let
+    autogen = mkNexus' <| getAttrOr "nexus" outputs' {};
+    outputs = removeAttrs outputs' ["nexus"];
+  in
+    autogen // outputs; # XXX: TODO: replace this with a deep merge
 }

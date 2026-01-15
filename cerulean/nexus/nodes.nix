@@ -21,7 +21,10 @@
 in rec {
   # abstract node instance that stores all default values
   templateNode = name: system: let
-    Terminal = nib.types.Terminal;
+    inherit
+      (nib.types)
+      Terminal
+      ;
 
     missing = msg: path:
       Terminal (abort ''
