@@ -36,6 +36,18 @@
         "type": "github"
       }
     },
+    "mix": {
+      "locked": {
+        "lastModified": 1768446394,
+        "narHash": "sha256-3mDswdUKnDSY571nstThXDSZG5wB4agkiOuJUV4YKgM=",
+        "path": "/home/me/agribit/nexus/mix",
+        "type": "path"
+      },
+      "original": {
+        "path": "/home/me/agribit/nexus/mix",
+        "type": "path"
+      }
+    },
     "nib": {
       "inputs": {
         "systems": [
@@ -43,17 +55,14 @@
         ]
       },
       "locked": {
-        "lastModified": 1768442186,
-        "narHash": "sha256-PMhz5gpLDBve8lxNX9eDLDC2+Y2mdPy8e8Pflzp6YYc=",
-        "owner": "emilelcb",
-        "repo": "nib",
-        "rev": "f3089ca0161e2925d24e9206b0a315319a1ad105",
-        "type": "github"
+        "lastModified": 1768446390,
+        "narHash": "sha256-Cp8dd4A3HsXUYCaQqCqb+VKwUdK0FAe8HyibVqZV/pA=",
+        "path": "/home/me/agribit/nexus/nib",
+        "type": "path"
       },
       "original": {
-        "owner": "emilelcb",
-        "repo": "nib",
-        "type": "github"
+        "path": "/home/me/agribit/nexus/nib",
+        "type": "path"
       }
     },
     "nixpkgs": {
@@ -74,11 +83,11 @@
     },
     "nixpkgs-unstable": {
       "locked": {
-        "lastModified": 1768127708,
-        "narHash": "sha256-1Sm77VfZh3mU0F5OqKABNLWxOuDeHIlcFjsXeeiPazs=",
+        "lastModified": 1768305791,
+        "narHash": "sha256-AIdl6WAn9aymeaH/NvBj0H9qM+XuAuYbGMZaP0zcXAQ=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "ffbc9f8cbaacfb331b6017d5a5abb21a492c9a38",
+        "rev": "1412caf7bf9e660f2f962917c14b1ea1c3bc695e",
         "type": "github"
       },
       "original": {
@@ -107,6 +116,7 @@
     "root": {
       "inputs": {
         "deploy-rs": "deploy-rs",
+        "mix": "mix",
         "nib": "nib",
         "nixpkgs": "nixpkgs_2",
         "nixpkgs-unstable": "nixpkgs-unstable",
