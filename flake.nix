@@ -26,8 +26,11 @@
       inputs.systems.follows = "systems";
     };
 
-    # mix.url = "github:emilelcb/mix";
-    mix.url = "/home/me/agribit/nexus/mix";
+    mix = {
+      # url = "github:emilelcb/mix";
+      url = "/home/me/agribit/nexus/mix";
+      inputs.nib.follows = "nib";
+    };
 
     deploy-rs.url = "github:serokell/deploy-rs";
   };
