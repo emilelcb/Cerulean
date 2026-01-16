@@ -43,14 +43,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1768521445,
-        "narHash": "sha256-gluJUJKtd0Gch5Li6TNw9xYU1iFYSVDd8++qYwdajlY=",
-        "path": "/home/me/agribit/nexus/mix",
-        "type": "path"
+        "lastModified": 1768525804,
+        "narHash": "sha256-jlpNb7Utqfdq2HESAB1mtddWHOsxKlTjPiLFRLd35r8=",
+        "owner": "emilelcb",
+        "repo": "mix",
+        "rev": "617d8915a6518a3d4e375b87c50ae34d9daee6c6",
+        "type": "github"
       },
       "original": {
-        "path": "/home/me/agribit/nexus/mix",
-        "type": "path"
+        "owner": "emilelcb",
+        "repo": "mix",
+        "type": "github"
       }
     },
     "nib": {
@@ -60,14 +63,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1768520505,
-        "narHash": "sha256-W5O2JzaMONE8NrDRL1XpQn0XEgZkfrozTs6Wv9yMJAk=",
-        "path": "/home/me/agribit/nexus/nib",
-        "type": "path"
+        "lastModified": 1768472076,
+        "narHash": "sha256-bdVRCDy6oJx/CZiyxkke783FgtBW//wDuOAITUsQcNc=",
+        "owner": "emilelcb",
+        "repo": "nib",
+        "rev": "42ac66dfc180a13af1cc8850397db66ec5556991",
+        "type": "github"
       },
       "original": {
-        "path": "/home/me/agribit/nexus/nib",
-        "type": "path"
+        "owner": "emilelcb",
+        "repo": "nib",
+        "type": "github"
       }
     },
     "nixpkgs": {
