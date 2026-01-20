@@ -1,0 +1,97 @@
+#!/usr/bin/env bash
+# Copyright 2025 Emile Clark-Boman
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+set -euo pipefail
+
+USAGE="${BOLD}${UNDERLINE}${RED}Usage${RESET}
+	${BOLD}${GREEN}$THIS new cache-key [option...]${RESET}
+
+${BOLD}${UNDERLINE}${RED}Options${RESET}
+	${BOLD}${MAGENTA}-h, --help${RESET}               Show this message (^_^)
+	${BOLD}${MAGENTA}-o, --out${RESET}                Private key file name to write to (the public key is named identically but ends with ${BOLD}${MAGENTA}.pub${RESET})
+	${BOLD}${MAGENTA}-j, --json${RESET}               Output in JSON format
+	${BOLD}${MAGENTA}-f, --force${RESET}              Ignores all warnings!!"
+
+# ==== Argument Values ====
+OUT=''
+JSON=false
+FORCE=false
+# ==== Argument Values ====
+
+# parse all args
+while [[ $# -gt 0 ]]; do
+	ARG="$1"
+	case "$ARG" in
+		-h|--help)
+			throw-usage 0
+			;;
+		-o|--out)
+			shift
+			# XXX: NOTE: do I need to safe shift (shift || true) since -e is set?
+			OUT="$1"; shift
+			;;
+		-j|--json)
+			shift
+			JSON=true
+			;;
+		-f|--force)
+			shift
+			FORCE=true
+			;;
+		-*)
+			throw-badflag 1 "$ARG"
+			;;
+		*)
+			throw-badarg 1 "$ARG"
+		  ;;
+	esac
+done; unset -v ARG
+
+
+
+# generate our keypair
+PRIV_KEY=$(wg genkey)
+PUB_KEY=$(wg pubkey <<<"$PRIV_KEY")
+
+# NOTE: same logic as `subcmds/new/cache-key`
+# result defaults to unset (only stays unset if we intend on writing to a file)
+RESULT=""
+# JSON formatting
+if [[ "$JSON" = true ]]; then
+	RESULT="{
+  \"privateKey\": \"${PRIV_KEY}\"
+	\"publicKey\": \"${PUB_KEY}\"
+}"
+	if [[ -n "$OUT" ]]; then
+		# confirm the user understands files will be overwritten
+		[[ "$FORCE" = true ]] || confirm-file-overwrite "$OUT" || exit 0
+		echo -e "$RESULT" > "$OUT"
+	else
+		echo -e "$RESULT"
+	fi
+# standard formatting (stdout)
+elif [[ -z "$OUT" ]]; then
+	echo -e "${BOLD}${UNDERLINE}${RED}Private Key${RESET}
+	${BOLD}${GREEN}${PRIV_KEY}${RESET}
+${BOLD}${UNDERLINE}${RED}Public Key${RESET}
+	${BOLD}${GREEN}${PUB_KEY}${RESET}" 
+# standard formatting (files)
+else
+	# confirm the user understands files will be overwritten
+	[[ "$FORCE" = true ]] || confirm-file-overwrite "$OUT" "$OUT.pub" || exit 0
+	echo "$PRIV_KEY" > "$OUT"
+	echo "$PUB_KEY" > "$OUT.pub"
+fi;
+unset -v OUT PRIV_KEY PUB_KEY RESULT
