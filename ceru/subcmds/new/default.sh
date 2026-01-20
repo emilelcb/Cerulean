@@ -22,7 +22,7 @@ ${BOLD}${UNDERLINE}${RED}Options${RESET}
 	${BOLD}${MAGENTA}-h, --help${RESET}               Show this message (^_^)
 
 ${BOLD}${UNDERLINE}${RED}Subcommands${RESET}
-	${BOLD}${CYAN}key${RESET}                      Generate a new binary-cache signing keypair"
+	${BOLD}${CYAN}cache-key${RESET}                      Generate a new binary-cache signing keypair
 
 # parse all args
 SUBCMD=false # where a subcommand was specified
