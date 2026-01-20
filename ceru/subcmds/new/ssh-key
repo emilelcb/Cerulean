@@ -96,18 +96,6 @@ case "$TYPE" in
 		;;
 esac
 
-if [[ -n "$COMMENT" ]]; then
-	EXTRA="$EXTRA -C '$COMMENT'"
-fi
-
-# BUG: WARNING: $OUT permits arbitrary command injection
-if [[ -n "$OUT" ]]; then
-	EXTRA="$EXTRA -f $OUT"
-fi
-
-if [[ "$NOPASSWD" == true ]]; then
-	EXTRA="$EXTRA -N ''"
-fi
 
 if [[ "$HWKEY" == true ]]; then
 	if [[ "$TYPE" == "rsa" ]]; then
@@ -117,10 +105,27 @@ if [[ "$HWKEY" == true ]]; then
 	TYPE="$TYPE-sk"
 fi
 
+if [[ -n "$COMMENT" ]]; then
+	EXTRA="$EXTRA -C '$COMMENT'"
+fi
+
+# BUG: WARNING: $OUT permits arbitrary command injection
+if [[ -n "$OUT" ]]; then
+	EXTRA="$EXTRA -f $OUT"
+else
+	# fallback to ssh-keygen's default file (for chmod later)
+	OUT="~/.ssh/id_$TYPE"
+fi
+
+if [[ "$NOPASSWD" == true ]]; then
+	EXTRA="$EXTRA -N ''"
+fi
 # permit error during key generation
 set +e
 echo -e "${BOLD}${GREEN}[+] ssh-keygen -t $TYPE -a '$ROUNDS' $EXTRA${RESET}"
 ssh-keygen -t $TYPE -a "$ROUNDS" $EXTRA
+chmod 600 $OUT
+chmod 644 $OUT.pub
 
 # reset state
 set -e
