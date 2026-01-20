@@ -23,6 +23,7 @@ ${BOLD}${UNDERLINE}${RED}Options${RESET}
 
 ${BOLD}${UNDERLINE}${RED}Subcommands${RESET}
 	${BOLD}${CYAN}cache-key${RESET}                      Generate a new binary-cache signing keypair
+	${BOLD}${CYAN}ssh-key${RESET}                        Generate a new SSH RSA-4096 keypair"
 
 # parse all args
 SUBCMD=false # where a subcommand was specified

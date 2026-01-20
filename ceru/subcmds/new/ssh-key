@@ -1,0 +1,121 @@
+#!/usr/bin/env bash
+# Copyright 2025 Emile Clark-Boman
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+set -euo pipefail
+
+USAGE="${BOLD}${UNDERLINE}${RED}Usage${RESET}
+	${BOLD}${GREEN}$THIS new ssh-key [option...]${RESET}
+
+${BOLD}${UNDERLINE}${RED}Description${RESET}
+	Generates a new SSH keypair with secure defaults.
+	For more advanced usage run the \`ssh-keygen\` utility directly.
+
+${BOLD}${UNDERLINE}${RED}Options${RESET}
+	${BOLD}${MAGENTA}-h, --help${RESET}               Show this message (^_^)
+	${BOLD}${MAGENTA}-o, --out${RESET}                Private key file name to write to (the public key is named identically but ends with ${BOLD}${MAGENTA}.pub${RESET})
+	${BOLD}${MAGENTA}-c, --comment${RESET}            A comment or email address to write on the key
+	${BOLD}${MAGENTA}-t, --type${RESET}               The cryptographic algorithm to use: ${BOLD}${MAGENTA}ed25519${RESET} or ${BOLD}${MAGENTA}rsa${RESET} ${BOLD}${CYAN}(default: rsa)${RESET}
+	${BOLD}${MAGENTA}-r, --rounds${RESET}             The number of key derivation function rounds to apply ${BOLD}${CYAN}(default: 100)${RESET}
+	${BOLD}${MAGENTA}-N, --nopasswd${RESET}           Do not encrypt the private key with a password
+	${BOLD}${MAGENTA}-H, --hardware-key${RESET}       Enable the use of a secure hardware key peripheral device (ie YubiKey)"
+
+# ==== Argument Values ====
+TYPE='rsa'
+ROUNDS='100'
+COMMENT=''
+OUT=''
+NOPASSWD=false
+HWKEY=false
+# ==== Argument Values ====
+
+# parse all args
+while [[ $# -gt 0 ]]; do
+	ARG="$1"
+	case "$ARG" in
+		-h|--help)
+			throw-usage 0
+			;;
+		-o|--out)
+			shift
+			# XXX: NOTE: do I need to safe shift (shift || true) since -e is set?
+			OUT="$1"; shift
+			;;
+		-c|--comment)
+			shift
+			# XXX: NOTE: do I need to safe shift (shift || true) since -e is set?
+			COMMENT="$1"; shift
+			;;
+		-t|--type)
+			shift
+			TYPE="$1"; shift
+			;;
+		-r|--rounds)
+			shift
+			# XXX: NOTE: do I need to safe shift (shift || true) since -e is set?
+			ROUNDS="$1"; shift
+			;;
+		-N|--nopasswd)
+			shift
+			NOPASSWD=true
+			;;
+		-H|--hardware-key)
+			shift
+			HWKEY=true
+			;;
+		-*)
+			throw-badflag 1 "$ARG"
+			;;
+		*)
+			throw-badarg 1 "$ARG"
+		  ;;
+	esac
+done; unset -v ARG
+
+EXTRA=''
+
+case "$TYPE" in
+	ed25519)
+		;;
+	rsa)
+		EXTRA="$EXTRA -b 4096"
+		;;
+	*)
+		throw-badvalue 1 "$TYPE" '-t|--type'
+		;;
+esac
+
+if [[ -n "$COMMENT" ]]; then
+	EXTRA="$EXTRA -C '$COMMENT'"
+fi
+
+if [[ -n "$OUT" ]]; then
+	EXTRA="$EXTRA -f '$OUT'"
+fi
+
+if [[ "$NOPASSWD" == true ]]; then
+	EXTRA="$EXTRA -N ''"
+fi
+
+if [[ "$HWKEY" == true ]]; then
+	TYPE="$TYPE-sk"
+fi
+
+# permit error during key generation
+set +e
+ssh-keygen -t "$TYPE" -a "$ROUNDS" $EXTRA
+
+# reset state
+set -e
+unset TYPE ROUNDS COMMENT OUT NOPASSWD EXTRA
