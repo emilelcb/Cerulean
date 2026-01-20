@@ -72,13 +72,13 @@
         lib.nixosSystem {
           system = node.system;
           modules = let
-            core' = nexus.root + "/hosts/${nodeName}";
-            core =
-              if pathExists core'
-              then core'
-              else core' + ".nix";
+            host' = nexus.root + "/hosts/${nodeName}";
+            host =
+              if pathExists host'
+              then host'
+              else host' + ".nix";
           in
-            [core ../nixos-module] ++ node.extraModules;
+            [../nixos-module host] ++ node.extraModules;
 
           # nix passes these to every single module
           specialArgs =
