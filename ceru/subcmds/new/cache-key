@@ -16,7 +16,7 @@
 set -euo pipefail
 
 USAGE="${BOLD}${UNDERLINE}${RED}Usage${RESET}
-	${BOLD}${GREEN}$THIS new key [option...]${RESET}
+	${BOLD}${GREEN}$THIS new cache-key [option...]${RESET}
 
 ${BOLD}${UNDERLINE}${RED}Options${RESET}
 	${BOLD}${MAGENTA}-h, --help${RESET}               Show this message (^_^)
