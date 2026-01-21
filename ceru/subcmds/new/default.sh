@@ -23,6 +23,7 @@ ${BOLD}${UNDERLINE}${RED}Options${RESET}
 
 ${BOLD}${UNDERLINE}${RED}Subcommands${RESET}
 	${BOLD}${CYAN}cache-key${RESET}                      Generate a new binary-cache signing keypair
+	${BOLD}${CYAN}password${RESET}                       Generate a new hashed Unix user password
 	${BOLD}${CYAN}ssh-key${RESET}                        Generate a new SSH keypair
 	${BOLD}${CYAN}wg-key${RESET}                         Generate a new Wireguard keypair"
 
