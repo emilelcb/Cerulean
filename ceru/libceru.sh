@@ -58,11 +58,11 @@ function perr-noarg      { perr "required argument ${BOLD}${MAGENTA}'$1'${RESET}
 function perr-badval     { perr "value ${MAGENTA}\"$1\"${WHITE} is not valid for flag ${CYAN}$2${RESET}"}
 # Failures
 function throw           { echo -e "${@:2}" >&2; if [[ "$1" -ge 0 ]]; then exit "$1"; fi; }
-function throw-usage     { throw "$1" "$(perr-usage 2>&1)"; }
-function throw-badflag   { throw "$1" "$(perr-badflag "${@:2}" 2>&1)"; }
-function throw-noflagval { throw "$1" "$(perr-noflagval "${@:2}" 2>&1)"; }
-function throw-badarg    { throw "$1" "$(perr-badarg "${@:2}" 2>&1)"; }
-function throw-noarg     { throw "$1" "$(perr-noarg "${@:2}" 2>&1)"; }
+function throw-usage     { throw "$1" "$(perr-usage               2>&1)"; }
+function throw-badflag   { throw "$1" "$(perr-badflag   "${@:2}"  2>&1)"; }
+function throw-noflagval { throw "$1" "$(perr-noflagval "${@:2}"  2>&1)"; }
+function throw-badarg    { throw "$1" "$(perr-badarg    "${@:2}"  2>&1)"; }
+function throw-noarg     { throw "$1" "$(perr-noarg     "${@:2}"  2>&1)"; }
 function throw-badval    { throw "$1" "$(perr-badval "$2" "$3"    2>&1)"; }
 # Parsing/Validation
 function required { [[ -n "$1" ]] || throw-noarg 1 "${@:2}"; }
