@@ -55,7 +55,7 @@ function perr-badflag    { perr "unrecognised flag ${BOLD}${MAGENTA}'$1'${RESET}
 function perr-noflagval  { perr "flag ${BOLD}${MAGENTA}'$1'${RESET} requires ${BOLD}${MAGENTA}${2}${RESET} argument(s), but only ${BOLD}${MAGENTA}${3}${RESET} were given"; }
 function perr-badarg     { perr "unrecognised arg ${BOLD}${MAGENTA}'$1'${RESET}"; }
 function perr-noarg      { perr "required argument ${BOLD}${MAGENTA}'$1'${RESET} is missing"; }
-function perr-badval     { perr "value ${MAGENTA}\"$1\"${WHITE} is not valid for flag ${CYAN}$2${RESET}"}
+function perr-badval     { perr "value ${MAGENTA}\"$1\"${WHITE} is not valid for flag ${CYAN}$2${RESET}"; }
 # Failures
 function throw           { echo -e "${@:2}" >&2; if [[ "$1" -ge 0 ]]; then exit "$1"; fi; }
 function throw-usage     { throw "$1" "$(perr-usage               2>&1)"; }
