@@ -50,7 +50,7 @@ INVISIBLE='\033[8m'
 
 # Error Messages
 function perr            { echo -e "${BOLD}${RED}error:${WHITE} $@\n${BOLD}${GREEN}[+]${WHITE} Try ${GREEN}'--help'${WHITE} for more information." >&2; }
-function perr-usage      { echo -e "$USAGE" >&2; }
+function perr-usage      { echo -e "$USAGE\n" >&2; }
 function perr-badflag    { perr "unrecognised flag ${BOLD}${MAGENTA}'$1'${RESET}"; }
 function perr-noflagval  { perr "flag ${BOLD}${MAGENTA}'$1'${RESET} requires ${BOLD}${MAGENTA}${2}${RESET} argument(s), but only ${BOLD}${MAGENTA}${3}${RESET} were given"; }
 function perr-badarg     { perr "unrecognised arg ${BOLD}${MAGENTA}'$1'${RESET}"; }
@@ -58,7 +58,7 @@ function perr-noarg      { perr "required argument ${BOLD}${MAGENTA}'$1'${RESET}
 function perr-badval     { perr "value ${MAGENTA}\"$1\"${WHITE} is not valid for flag ${CYAN}$2${RESET}"; }
 # Failures
 function throw           { echo -e "${@:2}" >&2; if [[ "$1" -ge 0 ]]; then exit "$1"; fi; }
-function throw-usage     { throw "$1" "$(perr-usage               2>&1)"; }
+function throw-usage     { throw "$1" "$(perr-usage               2>&1)\n"; }
 function throw-badflag   { throw "$1" "$(perr-badflag   "${@:2}"  2>&1)"; }
 function throw-noflagval { throw "$1" "$(perr-noflagval "${@:2}"  2>&1)"; }
 function throw-badarg    { throw "$1" "$(perr-badarg    "${@:2}"  2>&1)"; }
