@@ -34,6 +34,7 @@ ${BOLD}${UNDERLINE}${RED}Options${RESET}
 # ==== Argument Values ====
 TYPE='rsa'
 ROUNDS='100'
+BITS=''
 COMMENT=''
 OUT=''
 NOPASSWD=false
@@ -63,6 +64,10 @@ while [[ $# -gt 0 ]]; do
 			shift
 			ROUNDS="$1"; shift
 			;;
+		-b|--bits)
+			shift
+			BITS="$1"; shift
+			;;
 		-N|--nopasswd)
 			shift
 			NOPASSWD=true
@@ -88,9 +93,29 @@ fi
 
 case "$TYPE" in
 	ed25519)
+		# NOTE: the value of BITS does not matter for Ed25519
+		# NOTE: as it operates on a fixed size elliptic curve
+		if [[ -n "$BITS" ]]; then
+			BITS='256'
+		fi
 		;;
 	rsa)
-		EXTRA="$EXTRA -b 4096"
+		if [[ -n "$BITS" ]]; then
+			BITS='4096'
+		else
+			case "$BITS" in
+				2048)
+					echo -e "${BOLD}${UNDERLINE}${YELLOW}WARNING${RESET}${BOLD}: Although ${MAGENTA}2048-bit RSA keys${YELLOW} are considered secure,${RESET}" >&2
+					echo -e "${BOLD}${UNDERLINE}${YELLOW}WARNING${RESET}${BOLD}: it is the growing opinion that these will not be soon.${RESET}" >&2
+					echo -e "${BOLD}${UNDERLINE}${YELLOW}WARNING${RESET}${BOLD}: ${GREEN}Consider using a minimum of ${MAGENTA}3072-bit${YELLOW}, or ideally ${MAGENTA}4096-bit.${RESET}" >&2
+					;;
+				3072|4096|8192) true
+					;;
+				*)
+					throw-badval 1 "$BITS" '-b|--bits'
+					;;
+			esac
+		fi
 		;;
 	*)
 		throw-badval 1 "$TYPE" '-t|--type'
