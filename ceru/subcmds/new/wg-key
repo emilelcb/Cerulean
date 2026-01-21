@@ -39,7 +39,6 @@ while [[ $# -gt 0 ]]; do
 			;;
 		-o|--out)
 			shift
-			# XXX: NOTE: do I need to safe shift (shift || true) since -e is set?
 			OUT="$1"; shift
 			;;
 		-j|--json)

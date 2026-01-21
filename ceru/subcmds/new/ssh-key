@@ -49,12 +49,10 @@ while [[ $# -gt 0 ]]; do
 			;;
 		-o|--out)
 			shift
-			# XXX: NOTE: do I need to safe shift (shift || true) since -e is set?
 			OUT="$1"; shift
 			;;
 		-c|--comment)
 			shift
-			# XXX: NOTE: do I need to safe shift (shift || true) since -e is set?
 			COMMENT="$1"; shift
 			;;
 		-t|--type)
@@ -63,7 +61,6 @@ while [[ $# -gt 0 ]]; do
 			;;
 		-r|--rounds)
 			shift
-			# XXX: NOTE: do I need to safe shift (shift || true) since -e is set?
 			ROUNDS="$1"; shift
 			;;
 		-N|--nopasswd)

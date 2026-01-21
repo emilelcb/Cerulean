@@ -43,7 +43,6 @@ while [[ $# -gt 0 ]]; do
 			;;
 		-n|--name)
 			shift
-			# XXX: NOTE: do I need to safe shift (shift || true) since -e is set?
 			NAME="$1"; shift
 			;;
 		-P|--private-only)
@@ -52,7 +51,6 @@ while [[ $# -gt 0 ]]; do
 			;;
 		-o|--out)
 			shift
-			# XXX: NOTE: do I need to safe shift (shift || true) since -e is set?
 			SINK="$1"; shift
 			;;
 		-j|--json)
