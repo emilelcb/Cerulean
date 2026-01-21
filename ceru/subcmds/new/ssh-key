@@ -99,7 +99,7 @@ fi
 
 case "$TYPE" in
 	ecdsa)
-		if [[ -n "$BITS" ]]; then
+		if [[ -z "$BITS" ]]; then
 			BITS='521'
 		else
 			# NOTE: ECDSA keys can only operate on elliptic curves
@@ -116,12 +116,12 @@ case "$TYPE" in
 	ed25519)
 		# NOTE: the value of BITS does not matter for Ed25519
 		# NOTE: as it operates on a fixed size elliptic curve
-		if [[ -n "$BITS" ]]; then
+		if [[ -z "$BITS" ]]; then
 			BITS='256'
 		fi
 		;;
 	rsa)
-		if [[ -n "$BITS" ]]; then
+		if [[ -z "$BITS" ]]; then
 			BITS='4096'
 		else
 			case "$BITS" in
