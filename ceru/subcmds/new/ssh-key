@@ -37,7 +37,7 @@ ROUNDS='100'
 BITS=''
 COMMENT=''
 OUT=''
-NOPASSWD=false
+NOPASSWD=''
 HWKEY=false
 # ==== Argument Values ====
 
@@ -70,7 +70,7 @@ while [[ $# -gt 0 ]]; do
 			;;
 		-N|--nopasswd)
 			shift
-			NOPASSWD=true
+			NOPASSWD="-N ''"
 			;;
 		-H|--hardware-key)
 			shift
@@ -85,7 +85,6 @@ while [[ $# -gt 0 ]]; do
 	esac
 done; unset -v ARG
 
-EXTRA=''
 # ensure $ROUNDS is a valid numeric
 if ! isnumeric "$ROUNDS"; then
 	throw-badval 1 "$ROUNDS" '-r|--rounds'
@@ -134,28 +133,18 @@ if [[ "$HWKEY" == true ]]; then
 	TYPE="$TYPE-sk"
 fi
 
-if [[ -n "$COMMENT" ]]; then
-	EXTRA="$EXTRA -C '$COMMENT'"
-fi
-
-# BUG: WARNING: TODO: $OUT permits arbitrary command injection
-if [[ -n "$OUT" ]]; then
-	EXTRA="$EXTRA -f $OUT"
-else
+if [[ -z "$OUT" ]]; then
 	# fallback to ssh-keygen's default file (for chmod later)
 	OUT="~/.ssh/id_$TYPE"
 fi
 
-if [[ "$NOPASSWD" == true ]]; then
-	EXTRA="$EXTRA -N ''"
-fi
 # permit error during key generation
 set +e
-echo -e "${BOLD}${GREEN}[+] ssh-keygen -t $TYPE -a '$ROUNDS' $EXTRA${RESET}"
-ssh-keygen -t $TYPE -a "$ROUNDS" $EXTRA
+echo -e "${BOLD}${GREEN}[+] ssh-keygen -t $TYPE -a$ROUNDS -b$BITS -C '$COMMENT' -f '$OUT' $NOPASSWD${RESET}"
+ssh-keygen -t $TYPE -a "$ROUNDS" -b "$BITS" -C "$COMMENT" -f "$OUT" $NOPASSWD
 chmod 600 $OUT
 chmod 644 $OUT.pub
-
 # reset state
 set -e
-unset TYPE ROUNDS COMMENT OUT NOPASSWD HWKEY EXTRA
+
+unset TYPE ROUNDS BITS COMMENT OUT NOPASSWD HWKEY
