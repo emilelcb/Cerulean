@@ -96,7 +96,7 @@ esac
 
 if [[ "$HWKEY" == true ]]; then
 	if [[ "$TYPE" == "rsa" ]]; then
-		echo -e "${BOLD}${RED}-H|--hardware-key${RESET} flag is not valid for ${BOLD}${MAGENTA}rsa${RESET} keys ${BOLD}${CYAN}(use ed25519 instead)${RESET}"
+		echo -e "${BOLD}${MAGENTA}-H|--hardware-key${RESET} flag is not valid for ${BOLD}${MAGE}rsa${RESET} keys ${BOLD}${CYAN}(use ed25519 instead)${RESET}"
 		exit 1
 	fi
 	TYPE="$TYPE-sk"
@@ -106,7 +106,7 @@ if [[ -n "$COMMENT" ]]; then
 	EXTRA="$EXTRA -C '$COMMENT'"
 fi
 
-# BUG: WARNING: $OUT permits arbitrary command injection
+# BUG: WARNING: TODO: $OUT permits arbitrary command injection
 if [[ -n "$OUT" ]]; then
 	EXTRA="$EXTRA -f $OUT"
 else
