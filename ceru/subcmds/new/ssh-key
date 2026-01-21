@@ -28,6 +28,7 @@ ${BOLD}${UNDERLINE}${RED}Options${RESET}
 	${BOLD}${MAGENTA}-c, --comment${RESET}            A comment or email address to write on the key
 	${BOLD}${MAGENTA}-t, --type${RESET}               The cryptographic algorithm to use: ${BOLD}${MAGENTA}ed25519${RESET} or ${BOLD}${MAGENTA}rsa${RESET} ${BOLD}${CYAN}(default: rsa)${RESET}
 	${BOLD}${MAGENTA}-r, --rounds${RESET}             The number of key derivation function rounds to apply ${BOLD}${CYAN}(default: 100)${RESET}
+	${BOLD}${MAGENTA}-b, --bits${RESET}               The key size in bits ${BOLD}${MAGENTA}(see the \"Key Sizes\" section above) ${CYAN}(defaults: ecdsa=521, rsa=4096, ed25519=NOT-APPLICABLE)${RESET}
 	${BOLD}${MAGENTA}-N, --nopasswd${RESET}           Do not encrypt the private key with a password
 	${BOLD}${MAGENTA}-H, --hardware-key${RESET}       Enable the use of a secure hardware key peripheral device (ie YubiKey)"
 
