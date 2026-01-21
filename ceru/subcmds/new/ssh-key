@@ -73,7 +73,8 @@ while [[ $# -gt 0 ]]; do
 			;;
 		-t|--type)
 			shift
-			TYPE="$1"; shift
+			# NOTE: ${1,,} is $1 in lowercase
+			TYPE="${1,,}"; shift 
 			;;
 		-r|--rounds)
 			shift
