@@ -81,6 +81,10 @@ while [[ $# -gt 0 ]]; do
 done; unset -v ARG
 
 EXTRA=''
+# ensure $ROUNDS is a valid numeric
+if ! isnumeric "$ROUNDS"; then
+	throw-badval 1 "$ROUNDS" '-r|--rounds'
+fi
 
 case "$TYPE" in
 	ed25519)
@@ -93,6 +97,9 @@ case "$TYPE" in
 		;;
 esac
 
+if ! isnumeric "$BITS"; then
+	throw-badval 1 "$BITS" '-b|--bits'
+fi
 
 if [[ "$HWKEY" == true ]]; then
 	if [[ "$TYPE" == "rsa" ]]; then

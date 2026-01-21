@@ -100,6 +100,8 @@ function confirm-file-overwrite {
 	[[ "$OVERWRITE" = false ]] || confirm
 }
 
+function isnumeric { [[ "$1" =~ ^[0-9]+$ ]]; }
+
 # ====== Core ======
 function run-subcmd {
   # if CMD_MIN is empty, then CMD_MAJ is the root cmd (ie ceru)
