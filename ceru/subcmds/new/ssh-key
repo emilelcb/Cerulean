@@ -20,7 +20,7 @@ USAGE="${BOLD}${UNDERLINE}${RED}Usage${RESET}
 
 ${BOLD}${UNDERLINE}${RED}Description${RESET}
 	Generates a new SSH keypair with secure defaults.
-	For more advanced usage run the \`ssh-keygen\` utility directly.
+	For more advanced usage run the ${BOLD}${MAGENTA}\`ssh-keygen\`${RESET} utility directly.
 
 ${BOLD}${UNDERLINE}${RED}Options${RESET}
 	${BOLD}${MAGENTA}-h, --help${RESET}               Show this message (^_^)
