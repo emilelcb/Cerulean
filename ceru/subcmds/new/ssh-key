@@ -26,7 +26,7 @@ ${BOLD}${UNDERLINE}${RED}Key Sizes${RESET}
 	Key sizes are specified in bits via the ${BOLD}${MAGENTA}-b|--bits${RESET} flag.
 	• ${BOLD}${CYAN}ECDSA keys${RESET} can only operate on elliptic curves of size: ${BOLD}${CYAN}256, 384, or 521 bits${RESET}
 	• ${BOLD}${CYAN}Ed25519 keys${RESET} have a ${BOLD}${MAGENTA}fixed length${RESET} so the key size is ignored
-	• ${BOLD}${CYAN}RSA keys${RESET} have been intentionally restricted for Cerulean to: ${BOLD}${CYAN}2048, 3072, 4096, or 8192 bits${RESET}
+	• ${BOLD}${CYAN}RSA keys${RESET} have been intentionally restricted to: ${BOLD}${CYAN}2048, 3072, 4096, or 8192 bits${RESET}
 
 ${BOLD}${UNDERLINE}${RED}Options${RESET}
 	${BOLD}${MAGENTA}-h, --help${RESET}               Show this message (^_^)
@@ -39,7 +39,7 @@ ${BOLD}${UNDERLINE}${RED}Options${RESET}
 	${BOLD}${MAGENTA}-H, --hardware-key${RESET}       Enable the use of a secure hardware key peripheral device (ie YubiKey)"
 
 # ==== Argument Values ====
-TYPE='rsa'
+TYPE='ecdsa'
 ROUNDS='100'
 BITS=''
 COMMENT=''
