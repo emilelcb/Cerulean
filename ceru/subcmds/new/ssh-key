@@ -157,7 +157,7 @@ fi
 
 if [[ -z "$OUT" ]]; then
 	# fallback to ssh-keygen's default file (for chmod later)
-	OUT="~/.ssh/id_$TYPE"
+	OUT="$HOME/.ssh/id_$TYPE"
 fi
 
 # permit error during key generation
