@@ -49,7 +49,7 @@ REVERSE='\033[7m'
 INVISIBLE='\033[8m'
 
 # Error Messages
-function perr            { echo -e "${BOLD}${RED}error:${RESET} $@\nTry ${BOLD}${GREEN}'--help'${RESET} for more information." >&2; }
+function perr            { echo -e "${BOLD}${RED}error:${WHITE} $@\n${BOLD}${GREEN}[+]${WHITE} Try ${GREEN}'--help'${WHITE} for more information." >&2; }
 function perr-usage      { echo -e "$USAGE" >&2; }
 function perr-badflag    { perr "unrecognised flag ${BOLD}${MAGENTA}'$1'${RESET}"; }
 function perr-noflagval  { perr "flag ${BOLD}${MAGENTA}'$1'${RESET} requires ${BOLD}${MAGENTA}${2}${RESET} argument(s), but only ${BOLD}${MAGENTA}${3}${RESET} were given"; }
