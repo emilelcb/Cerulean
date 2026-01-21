@@ -15,6 +15,14 @@
 
 set -euo pipefail
 
+# ===== CONFIGURATION =====
+DEFAULT_TYPE='ecdsa'
+DEFAULT_ROUNDS='100'
+DEFAULT_BITS_ECDSA='521'
+DEFAULT_BITS_RSA='4096'
+DEFAULT_BITS_ED25519='NULL'
+# ===== CONFIGURATION =====
+
 USAGE="${BOLD}${UNDERLINE}${RED}Usage${RESET}
 	${BOLD}${GREEN}$THIS new ssh-key [option...]${RESET}
 
@@ -32,15 +40,15 @@ ${BOLD}${UNDERLINE}${RED}Options${RESET}
 	${BOLD}${MAGENTA}-h, --help${RESET}               Show this message (^_^)
 	${BOLD}${MAGENTA}-o, --out${RESET}                Private key file name to write to (the public key is named identically but ends with ${BOLD}${MAGENTA}.pub${RESET})
 	${BOLD}${MAGENTA}-c, --comment${RESET}            A comment or email address to write on the key
-	${BOLD}${MAGENTA}-t, --type${RESET}               The cryptographic algorithm to use: ${BOLD}${MAGENTA}ecdsa, ed25519, rsa${RESET} ${BOLD}${CYAN}(default: ecdsa)${RESET}
-	${BOLD}${MAGENTA}-r, --rounds${RESET}             The number of KDF rounds to apply ${BOLD}${CYAN}(default: 100)${RESET}
-	${BOLD}${MAGENTA}-b, --bits${RESET}               The key size in bits ${BOLD}${MAGENTA}(see \"Key Sizes\" above) ${CYAN}(defaults: ecdsa=521, rsa=4096, ed25519=NULL)${RESET}
+	${BOLD}${MAGENTA}-t, --type${RESET}               The cryptographic algorithm to use: ${BOLD}${MAGENTA}ecdsa, ed25519, rsa${RESET} ${BOLD}${CYAN}(default: $DEFAULT_TYPE)${RESET}
+	${BOLD}${MAGENTA}-r, --rounds${RESET}             The number of KDF rounds to apply ${BOLD}${CYAN}(default: $DEFAULT_ROUNDS)${RESET}
+	${BOLD}${MAGENTA}-b, --bits${RESET}               The key size in bits ${BOLD}${MAGENTA}(see \"Key Sizes\" above) ${CYAN}(defaults: ecdsa=$DEFAULT_BITS_ECDSA, rsa=$DEFAULT_BITS_RSA, ed25519=$DEFAULT_BITS_ED25519)${RESET}
 	${BOLD}${MAGENTA}-N, --nopasswd${RESET}           Do not encrypt the private key with a password
 	${BOLD}${MAGENTA}-H, --hardware-key${RESET}       Enable the use of a secure hardware key peripheral device (ie YubiKey)"
 
 # ==== Argument Values ====
-TYPE='ecdsa'
-ROUNDS='100'
+TYPE="$DEFAULT_TYPE"
+ROUNDS="$DEFAULT_ROUNDS"
 BITS=''
 COMMENT=''
 OUT=''
@@ -169,4 +177,5 @@ chmod 644 $OUT.pub
 # reset state
 set -e
 
-unset TYPE ROUNDS BITS COMMENT OUT NOPASSWD HWKEY
+unset TYPE ROUNDS BITS COMMENT OUT NOPASSWD HWKEY \
+			DEFAULT_TYPE DEFAULT_ROUNDS DEFAULT_BITS_ECDSA DEFAULT_BITS_RSA DEFAULT_BITS_ED25519
