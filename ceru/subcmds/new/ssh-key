@@ -92,7 +92,7 @@ case "$TYPE" in
 		EXTRA="$EXTRA -b 4096"
 		;;
 	*)
-		throw-badvalue 1 "$TYPE" '-t|--type'
+		throw-badval 1 "$TYPE" '-t|--type'
 		;;
 esac
 
