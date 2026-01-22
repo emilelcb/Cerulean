@@ -46,7 +46,7 @@ nix-instantiate               \
 
 nix/flake.rs:                   let child = Command::new("nix")
 /*
-# `FlakeMetadata::resolve(flake: &str) -> ColmenaREsult<Self>`
+# `FlakeMetadata::resolve(flake: &str) -> ColmenaResult<Self>`
 nix flake metadata                                   \
   --json                                             \
   --extra-experimental-features "nix-command flakes"
@@ -140,7 +140,7 @@ nix/host/local.rs:              self.make_privileged_command(&["nix-env", "--pro
 # XXX: NOTE: Same as `Ssh::activate(...)`
 
 # NOTE: This command runs if `goal.should_switch_profile()`
-nix-env --profile $SYSTEM+PROFILE
+nix-env --profile $SYSTEM_PROFILE
   --set $PROFILE_PATH
 
 # NOTE: Separate command (runs regardless of `goal.should_switch_profile()`)

@@ -50,7 +50,6 @@
         Ensure `nexus.${path}` exists under your call to `cerulean.mkNexus`.
       '');
   in {
-    root = missing "the root directory for all cerulean nix modules." "root";
     groups = missing "an list of all valid node group names." "groups";
     nodes = Terminal {};
   };
@@ -64,7 +63,7 @@
       ''
     else nib.parse.overrideStruct templateNexus nexus;
 
-  mkNexus' = nexus': let
+  mkNexus' = root: nexus': let
     nexus = parseNexus nexus';
   in rec {
     nixosConfigurations = mapNodes nexus.nodes (
@@ -72,7 +71,7 @@
         lib.nixosSystem {
           system = node.system;
           modules = let
-            host' = nexus.root + "/hosts/${nodeName}";
+            host' = root + "/hosts/${nodeName}";
             host =
               if pathExists host'
               then host'
@@ -143,8 +142,8 @@
     checks = mapAttrs (system: deployLib: deployLib.deployChecks deploy) deploy-rs.lib;
   };
 in {
-  mkNexus = outputs': let
-    autogen = mkNexus' <| getAttrOr "nexus" outputs' {};
+  mkNexus = root: outputs': let
+    autogen = mkNexus' root <| getAttrOr "nexus" outputs' {};
     outputs = removeAttrs outputs' ["nexus"];
   in
     autogen // outputs; # XXX: TODO: replace this with a deep merge
