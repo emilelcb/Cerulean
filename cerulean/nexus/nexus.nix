@@ -143,7 +143,7 @@
   };
 in {
   mkNexus = root: outputs': let
-    autogen = mkNexus' root <| getAttrOr "nexus" outputs' {};
+    autogen = mkNexus' root <| getAttrOr {} "nexus" outputs';
     outputs = removeAttrs outputs' ["nexus"];
   in
     autogen // outputs; # XXX: TODO: replace this with a deep merge
