@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-{nib, ...}: let
+{nt, ...}: let
   inherit
     (builtins)
     isAttrs
@@ -22,7 +22,7 @@ in rec {
   # abstract node instance that stores all default values
   templateNode = name: system: let
     inherit
-      (nib.types)
+      (nt.types)
       Terminal
       ;
 
@@ -70,7 +70,7 @@ in rec {
     else let
       templateAttrs = templateNode name nodeAttrs.system;
     in
-      nib.parse.overrideStruct templateAttrs nodeAttrs;
+      nt.projectOnto templateAttrs nodeAttrs;
 
   mapNodes = nodes: f:
     nodes
