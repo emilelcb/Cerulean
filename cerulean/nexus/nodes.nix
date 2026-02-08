@@ -25,14 +25,7 @@ in rec {
       (nt.types)
       Terminal
       ;
-
-    missing = msg: path:
-      Terminal (abort ''
-        Each Cerulean Nexus node is required to specify ${msg}!
-        Ensure `cerulean.nexus.nodes.${name}.${path}` exists under your call to `cerulean.mkNexus`.
-      '');
   in {
-    # system = missing "its system type" "system"; # intentionally left missing!! (to raise errors)
     system = "x86_64-linux"; # sane default (i hope...)
     extraModules = [];
     specialArgs = Terminal {};
@@ -51,7 +44,7 @@ in rec {
       confirmTimeout = 30; # timeout in seconds for profile activation confirmation
 
       ssh = {
-        host = missing "an SSH hostname (domain name or ip address) for deployment" "deploy.ssh.host";
+        host = name;
         user = "ceru-build"; # ceru-build is the default connection user
         port = 22;
         opts = [];
