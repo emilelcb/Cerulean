@@ -25,11 +25,11 @@ mix.newMixture inputs (mixture: {
     # build deploy-rs as a package not from the flake input,
     # hence we can rely on a nixpkg binary cache.
     deploy-rs.overlays.default
-    (self: super: {
-      deploy-rs = {
-        inherit (super) deploy-rs;
-        lib = super.deploy-rs.lib;
-      };
-    })
+    # (self: super: {
+    #   deploy-rs = {
+    #     inherit (super) deploy-rs;
+    #     lib = super.deploy-rs.lib;
+    #   };
+    # })
   ];
 })
