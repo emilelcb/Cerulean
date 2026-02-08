@@ -14,7 +14,7 @@
 {
   this,
   sys,
-  nib,
+  nt,
   lib,
   deploy-rs,
   ...
@@ -40,7 +40,7 @@
 
   templateNexus = let
     inherit
-      (nib.types)
+      (nt.types)
       Terminal
       ;
 
@@ -61,7 +61,7 @@
         Cerulean Nexus config must be provided as an attribute set, got "${typeOf nexus}" instead!
         Ensure all the `nexus` declaration is an attribute set under your call to `cerulean.mkNexus`.
       ''
-    else nib.parse.overrideStruct templateNexus nexus;
+    else nt.projectOnto templateNexus nexus;
 
   mkNexus' = root: nexus': let
     nexus = parseNexus nexus';

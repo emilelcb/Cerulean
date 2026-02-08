@@ -20,42 +20,26 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
 
-    nib = {
-      url = "github:emilelcb/nib";
-      # url = "/home/me/agribit/nexus/nib";
-      inputs.systems.follows = "systems";
-    };
-
-    mix = {
-      url = "github:emilelcb/mix";
-      # url = "/home/me/agribit/nexus/mix";
-      inputs.nib.follows = "nib";
+    nt = {
+      url = "github:emilelcb/nt";
+      inputs = {
+        systems.follows = "systems";
+        nixpkgs.follows = "nixpkgs";
+      };
     };
 
     deploy-rs.url = "github:serokell/deploy-rs";
   };
 
   outputs = {
-    self,
     nixpkgs,
-    nixpkgs-unstable,
-    nib,
+    nt,
     ...
-  } @ inputs: let
-    inherit
-      (nixpkgs)
-      lib
-      ;
-
-    sys = nib.mkUSys {
-      pkgs = nib.withPkgs nixpkgs {
-        config.allowUnfree = false;
-        overlays = builtins.attrValues self.overlays;
-      };
-      upkgs = nib.withPkgs nixpkgs-unstable {
-        config.allowUnfree = false;
-      };
+  } @ inputs:
+    import ./cerulean
+    <| inputs
+    // {
+      inherit (nixpkgs) lib;
+      inherit (nt) mix;
     };
-  in
-    import ./cerulean <| inputs // {inherit lib sys;};
 }
