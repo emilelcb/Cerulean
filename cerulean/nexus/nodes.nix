@@ -29,6 +29,9 @@ in rec {
     system = "x86_64-linux"; # sane default (i hope...)
     extraModules = [];
     specialArgs = Terminal {};
+    overlays = [];
+    # XXX: WARNING: extraPkgConfig is a terrible solution (but im lazy for now)
+    extraPkgConfig = Terminal {};
 
     deploy = {
       user = "root";

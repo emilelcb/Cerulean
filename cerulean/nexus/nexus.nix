@@ -12,8 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 {
+  self,
   this,
-  sys,
+  nixpkgs,
+  nixpkgs-unstable,
   nt,
   lib,
   deploy-rs,
@@ -33,11 +35,6 @@
     mapNodes
     ;
 
-  inherit
-    (nib.std)
-    getAttrOr
-    ;
-
   templateNexus = let
     inherit
       (nt.types)
@@ -51,6 +48,7 @@
       '');
   in {
     groups = missing "an list of all valid node group names." "groups";
+    overlays = [];
     nodes = Terminal {};
   };
 
@@ -80,11 +78,21 @@
             [../nixos-module host] ++ node.extraModules;
 
           # nix passes these to every single module
-          specialArgs =
+          specialArgs = let
+            pkgConfig =
+              {
+                inherit (node) system;
+                # XXX: WARNING: TODO: i've stopped caring
+                # XXX: WARNING: TODO: just figure out a better solution to pkgConfig
+                config.allowUnfree = true;
+                overlays = self.overlays ++ nexus.overlays ++ node.overlays;
+              }
+              // node.extraPkgConfig;
+          in
             node.specialArgs
             // {
-              pkgs = sys.pkgsFor node.system;
-              upkgs = sys.upkgsFor node.system;
+              pkgs = import nixpkgs pkgConfig;
+              upkgs = import nixpkgs-unstable pkgConfig;
             };
         }
     );
@@ -143,7 +151,7 @@
   };
 in {
   mkNexus = root: outputs': let
-    autogen = mkNexus' root <| getAttrOr "nexus" {} outputs';
+    autogen = mkNexus' root (outputs'.nexus or {});
     outputs = removeAttrs outputs' ["nexus"];
   in
     autogen // outputs; # XXX: TODO: replace this with a deep merge
