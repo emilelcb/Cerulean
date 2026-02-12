@@ -24,11 +24,14 @@
   inherit
     (builtins)
     attrNames
+    concatLists
     concatStringsSep
     elem
+    filter
     getAttr
     isAttrs
     isFunction
+    isList
     mapAttrs
     pathExists
     typeOf
@@ -56,25 +59,32 @@
     nodes = Terminal {};
   };
 
-  parseGroups = groups: let
+  ROOT_GROUP_NAME = "all";
+
+  parseGroupDecl = groups: let
     validGroup = g:
       isAttrs g
       || throw ''
         Cerulean Nexus groups must be provided as attribute sets, got "${typeOf g}" instead!
         Ensure all the `groups` definitions are attribute sets under your call to `cerulean.mkNexus`.
       '';
-    delegate = parent: g:
-      g
-      |> mapAttrs (name: value:
-        assert validGroup value;
-          (delegate g value)
+    delegate = parent: gName: g: let
+      result =
+        (g
           // {
-            _name = name;
+            _name = gName;
             _parent = parent;
-          });
+          })
+        |> mapAttrs (name: value:
+          if elem name ["_name" "_parent"]
+          # ignore metadata fields
+          then value
+          else assert validGroup value; (delegate result name value));
+    in
+      result;
   in
     assert validGroup groups;
-      delegate null groups;
+      delegate null ROOT_GROUP_NAME groups;
 
   parseNexus = nexus:
     assert isAttrs nexus
@@ -88,7 +98,7 @@
       # XXX: TODO: handle applying a transformation to the result of each datapoint
       base
       // {
-        groups = parseGroups base.groups;
+        groups = parseGroupDecl base.groups;
       };
 
   parseDecl = outputsBuilder: let
@@ -135,26 +145,85 @@ in {
               host = findImport (root + "/hosts/${nodeName}");
               # XXX: TODO: don't use a naive type for this (ie _name property)
               # XXX: TODO: i really need NixTypes to be stable and use that instead
-              groups =
+              # groups =
+              #   node.groups
+              #   |> map (group:
+              #     assert group ? _name
+              #     || throw (let
+              #       got =
+              #         if ! isAttrs group
+              #         then toString group
+              #         else
+              #           group
+              #           |> attrNames
+              #           |> map (name: "${name} = <${typeOf (getAttr name group)}>;")
+              #           |> concatStringsSep " "
+              #           |> (x: "{ ${x} }");
+              #     in ''
+              #       Cerulean Nexus node "${nodeName}" is a member of a nonexistent group.
+              #       Got "${got}" of primitive type "${typeOf group}".
+              #       NOTE: Groups can be accessed via `self.groups.PATH.TO.YOUR.GROUP`
+              #     '');
+              #       findImport (root + "/groups/${group._name}"))
+              #   |> nt.prim.unique; # filter by uniqueness
+              groups = assert isList node.groups
+              || throw ''
+                Cerulean Nexus node "${nodeName}" does not declare group membership as a list, got "${typeOf node.groups}" instead!
+                Ensure `nexus.nodes.${nodeName}.groups` is a list under your call to `cerulean.mkNexus`.
+              '';
                 node.groups
-                |> map (group:
-                  assert group ? _name
-                  || throw (let
+                # ensure all members are actually groups
+                |> map (group: let
+                  got =
+                    if ! isAttrs group
+                    then toString group
+                    else
+                      group
+                      |> attrNames
+                      |> map (name: "${name} = <${typeOf (getAttr name group)}>;")
+                      |> concatStringsSep " "
+                      |> (x: "{ ${x} }");
+                in
+                  if group ? _name
+                  then group
+                  else
+                    throw ''
+                      Cerulean Nexus node "${nodeName}" is a member of an incorrectly structured group.
+                      Got "${got}" of primitive type "${typeOf group}".
+                      NOTE: Groups can be accessed via `self.groups.PATH.TO.YOUR.GROUP`
+                    '')
+                # add all inherited groups via _parent
+                |> map (let
+                  delegate = g: let
                     got =
-                      if ! isAttrs group
-                      then toString group
+                      if ! isAttrs g
+                      then toString g
                       else
-                        group
+                        g
                         |> attrNames
-                        |> map (name: "${name} = <${typeOf (getAttr name group)}>;")
+                        |> map (name: "${name} = <${typeOf (getAttr name g)}>;")
                         |> concatStringsSep " "
                         |> (x: "{ ${x} }");
-                  in ''
-                    Cerulean Nexus node "${nodeName}" is a member of a nonexistent group.
-                    Got "${got}" of primitive type "${typeOf group}".
-                    NOTE: Groups can be accessed via `self.groups.PATH.TO.YOUR.GROUP`
-                  '');
-                    findImport (root + "/groups/${group._name}"));
+                  in
+                    assert g ? _parent
+                    || throw ''
+                      Cerulean Nexus node "${nodeName}" is a member of an incorrectly structured group.
+                      Got "${got}" of primitive type "${typeOf g}".
+                      NOTE: Groups can be accessed via `self.groups.PATH.TO.YOUR.GROUP`
+                    '';
+                      if g._parent == null
+                      then [g]
+                      else [g] ++ delegate (g._parent);
+                in
+                  delegate)
+                # flatten recursion result
+                |> concatLists
+                # find import location
+                |> map (group: findImport (root + "/groups/${group._name}"))
+                # filter by uniqueness
+                |> nt.prim.unique
+                # ignore missing groups
+                |> filter pathExists;
             in
               [../nixos-module host] ++ groups ++ node.extraModules;
 
