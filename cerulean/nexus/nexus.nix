@@ -241,6 +241,7 @@ in {
             in
               node.specialArgs
               // {
+                inherit root;
                 pkgs = import nixpkgs pkgConfig;
                 upkgs = import nixpkgs-unstable pkgConfig;
               };
