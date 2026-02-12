@@ -11,8 +11,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-{...} @ inputs: {
-  options = import ./options.nix inputs;
+{deploy-rs, ...}: {
+  imports = [
+    # ./nixpkgs.nix
+  ];
 
-  config = import ./config.nix inputs;
+  environment.systemPackages = [
+    deploy-rs.packages.default
+  ];
 }
