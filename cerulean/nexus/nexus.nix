@@ -54,8 +54,11 @@
         Ensure `nexus.${path}` exists under your call to `cerulean.mkNexus`.
       '');
   in {
-    groups = Terminal {};
     overlays = [];
+    extraModules = [];
+    specialArgs = Terminal {};
+
+    groups = Terminal {};
     nodes = Terminal {};
   };
 
@@ -121,10 +124,19 @@
   in
     final;
 
+  importOverlays = root: let
+    path = findImport (root + "/overlay");
+  in
+    if pathExists path
+    then import path
+    else [];
+
   # XXX: TODO: create a function in NixTypes that handles this instead
   findImport = path:
     if pathExists path
     then path
+    else if pathExists (path + "default.nix")
+    then path + "/default.nix"
     else path + ".nix";
 in {
   mkNexus = root: outputsBuilder: let
@@ -143,29 +155,6 @@ in {
             system = node.system;
             modules = let
               host = findImport (root + "/hosts/${nodeName}");
-              # XXX: TODO: don't use a naive type for this (ie _name property)
-              # XXX: TODO: i really need NixTypes to be stable and use that instead
-              # groups =
-              #   node.groups
-              #   |> map (group:
-              #     assert group ? _name
-              #     || throw (let
-              #       got =
-              #         if ! isAttrs group
-              #         then toString group
-              #         else
-              #           group
-              #           |> attrNames
-              #           |> map (name: "${name} = <${typeOf (getAttr name group)}>;")
-              #           |> concatStringsSep " "
-              #           |> (x: "{ ${x} }");
-              #     in ''
-              #       Cerulean Nexus node "${nodeName}" is a member of a nonexistent group.
-              #       Got "${got}" of primitive type "${typeOf group}".
-              #       NOTE: Groups can be accessed via `self.groups.PATH.TO.YOUR.GROUP`
-              #     '');
-              #       findImport (root + "/groups/${group._name}"))
-              #   |> nt.prim.unique; # filter by uniqueness
               groups = assert isList node.groups
               || throw ''
                 Cerulean Nexus node "${nodeName}" does not declare group membership as a list, got "${typeOf node.groups}" instead!
@@ -194,26 +183,10 @@ in {
                     '')
                 # add all inherited groups via _parent
                 |> map (let
-                  delegate = g: let
-                    got =
-                      if ! isAttrs g
-                      then toString g
-                      else
-                        g
-                        |> attrNames
-                        |> map (name: "${name} = <${typeOf (getAttr name g)}>;")
-                        |> concatStringsSep " "
-                        |> (x: "{ ${x} }");
-                  in
-                    assert g ? _parent
-                    || throw ''
-                      Cerulean Nexus node "${nodeName}" is a member of an incorrectly structured group.
-                      Got "${got}" of primitive type "${typeOf g}".
-                      NOTE: Groups can be accessed via `self.groups.PATH.TO.YOUR.GROUP`
-                    '';
-                      if g._parent == null
-                      then [g]
-                      else [g] ++ delegate (g._parent);
+                  delegate = g:
+                    if g._parent == null
+                    then [g]
+                    else [g] ++ delegate (g._parent);
                 in
                   delegate)
                 # flatten recursion result
@@ -225,7 +198,9 @@ in {
                 # ignore missing groups
                 |> filter pathExists;
             in
-              [../nixos-module host] ++ groups ++ node.extraModules;
+              [../nixos-module host]
+              ++ groups
+              ++ node.extraModules;
 
             # nix passes these to every single module
             specialArgs = let
@@ -234,8 +209,13 @@ in {
                   inherit (node) system;
                   # XXX: WARNING: TODO: i've stopped caring
                   # XXX: WARNING: TODO: just figure out a better solution to pkgConfig
-                  config.allowUnfree = true;
-                  overlays = self.overlays ++ nexus.overlays ++ node.overlays;
+                  config.allowUnfree = false;
+                  config.allowBroken = false;
+                  overlays =
+                    self.overlays
+                    ++ nexus.overlays
+                    ++ node.overlays
+                    ++ importOverlays root;
                 }
                 // node.extraPkgConfig;
             in
