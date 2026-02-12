@@ -11,13 +11,19 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-{deploy-rs, ...}: {
-  imports = [
-    ./nixpkgs.nix
-    ./home-manager.nix
-  ];
+{
+  root,
+  config,
+  lib,
+  ...
+} @ args: {
+  home-manager = {
+    users =
+      config.users.users
+      |> builtins.attrNames
+      |> builtins.filter (x: builtins.pathExists (root + "/homes/${x}"))
+      |> (x: lib.genAttrs x (y: import (root + "/homes/${y}")));
 
-  environment.systemPackages = [
-    deploy-rs.packages.default
-  ];
+    extraSpecialArgs = args;
+  };
 }
