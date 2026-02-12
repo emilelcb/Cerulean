@@ -207,6 +207,8 @@ in {
 
             # nix passes these to every single module
             specialArgs = let
+              # XXX: NOTE: REF: https://github.com/NixOS/nixpkgs/blob/master/flake.nix#L57
+              # XXX: NOTE: lib.nixosSystem is defined here ^^^^
               pkgConfig =
                 {
                   inherit (node) system;
