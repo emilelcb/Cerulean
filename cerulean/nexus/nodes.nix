@@ -22,11 +22,12 @@ in rec {
   # abstract node instance that stores all default values
   templateNode = name: system: let
     inherit
-      (nt.types)
+      (nt.naive.terminal)
       Terminal
       ;
   in {
     system = "x86_64-linux"; # sane default (i hope...)
+    groups = [];
     extraModules = [];
     specialArgs = Terminal {};
     overlays = [];

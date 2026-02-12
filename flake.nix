@@ -31,9 +31,9 @@
     ...
   } @ inputs:
     import ./cerulean
-    <| inputs
-    // {
-      inherit (nixpkgs) lib;
-      inherit (nt) mix;
-    };
+    (inputs
+      // {
+        inherit (nixpkgs) lib;
+        inherit (nt) mix;
+      });
 }
