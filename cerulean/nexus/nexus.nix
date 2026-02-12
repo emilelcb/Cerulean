@@ -57,6 +57,8 @@
     overlays = [];
     extraModules = [];
     specialArgs = Terminal {};
+    # XXX: WARNING: extraPkgConfig is a terrible solution (but im lazy for now)
+    extraPkgConfig = Terminal {};
 
     groups = Terminal {};
     nodes = Terminal {};
@@ -200,7 +202,8 @@ in {
             in
               [../nixos-module host]
               ++ groups
-              ++ node.extraModules;
+              ++ node.extraModules
+              ++ nexus.extraModules;
 
             # nix passes these to every single module
             specialArgs = let
@@ -217,9 +220,11 @@ in {
                     ++ node.overlays
                     ++ importOverlays root;
                 }
-                // node.extraPkgConfig;
+                // nexus.extraPkgConfig # TODO: import
+                // node.extraPkgConfig; # TODO: import
             in
-              node.specialArgs
+              nexus.specialArgs
+              // node.specialArgs
               // {
                 inherit root;
                 pkgs = import nixpkgs pkgConfig;
