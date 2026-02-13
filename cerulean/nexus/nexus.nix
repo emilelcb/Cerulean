@@ -12,10 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 {
-  self,
   this,
-  nixpkgs,
-  nixpkgs-unstable,
   nt,
   lib,
   deploy-rs,
@@ -42,6 +39,11 @@
     mapNodes
     ;
 
+  inherit
+    (nt)
+    findImport
+    ;
+
   templateNexus = let
     inherit
       (nt.naive.terminal)
@@ -54,11 +56,8 @@
         Ensure `nexus.${path}` exists under your call to `cerulean.mkNexus`.
       '');
   in {
-    overlays = [];
     extraModules = [];
     specialArgs = Terminal {};
-    # XXX: WARNING: extraPkgConfig is a terrible solution (but im lazy for now)
-    extraPkgConfig = Terminal {};
 
     groups = Terminal {};
     nodes = Terminal {};
@@ -71,7 +70,8 @@
       isAttrs g
       || throw ''
         Cerulean Nexus groups must be provided as attribute sets, got "${typeOf g}" instead!
-        Ensure all the `groups` definitions are attribute sets under your call to `cerulean.mkNexus`.
+        Ensure all the group definitions are attribute sets under your call to `cerulean.mkNexus`.
+        NOTE: Groups can be accessed via `self.groups.PATH.TO.YOUR.GROUP`
       '';
     delegate = parent: gName: g: let
       result =
@@ -126,20 +126,49 @@
   in
     final;
 
-  importOverlays = root: let
-    path = findImport (root + "/overlay");
-  in
-    if pathExists path
-    then import path
-    else [];
-
-  # XXX: TODO: create a function in NixTypes that handles this instead
-  findImport = path:
-    if pathExists path
-    then path
-    else if pathExists (path + "default.nix")
-    then path + "/default.nix"
-    else path + ".nix";
+  getGroupModules = root: nodeName: node:
+    assert isList node.groups
+    || throw ''
+      Cerulean Nexus node "${nodeName}" does not declare group membership as a list, got "${typeOf node.groups}" instead!
+      Ensure `nexus.nodes.${nodeName}.groups` is a list under your call to `cerulean.mkNexus`.
+    '';
+      node.groups
+      # ensure all members are actually groups
+      |> map (group: let
+        got =
+          if ! isAttrs group
+          then toString group
+          else
+            group
+            |> attrNames
+            |> map (name: "${name} = <${typeOf (getAttr name group)}>;")
+            |> concatStringsSep " "
+            |> (x: "{ ${x} }");
+      in
+        if group ? _name
+        then group
+        else
+          throw ''
+            Cerulean Nexus node "${nodeName}" is a member of an incorrectly structured group.
+            Got "${got}" of primitive type "${typeOf group}".
+            NOTE: Groups can be accessed via `self.groups.PATH.TO.YOUR.GROUP`
+          '')
+      # add all inherited groups via _parent
+      |> map (let
+        delegate = g:
+          if g._parent == null
+          then [g]
+          else [g] ++ delegate (g._parent);
+      in
+        delegate)
+      # flatten recursion result
+      |> concatLists
+      # find import location
+      |> map (group: findImport (root + "/groups/${group._name}"))
+      # filter by uniqueness
+      |> nt.prim.unique
+      # ignore missing groups
+      |> filter pathExists;
 in {
   mkNexus = root: outputsBuilder: let
     decl = parseDecl outputsBuilder;
@@ -152,87 +181,21 @@ in {
 
     outputs = rec {
       nixosConfigurations = mapNodes nexus.nodes (
-        nodeName: node:
-          lib.nixosSystem {
+        nodeName: node: let
+          nixosDecl = lib.nixosSystem {
             system = node.system;
-            modules = let
-              host = findImport (root + "/hosts/${nodeName}");
-              groups = assert isList node.groups
-              || throw ''
-                Cerulean Nexus node "${nodeName}" does not declare group membership as a list, got "${typeOf node.groups}" instead!
-                Ensure `nexus.nodes.${nodeName}.groups` is a list under your call to `cerulean.mkNexus`.
-              '';
-                node.groups
-                # ensure all members are actually groups
-                |> map (group: let
-                  got =
-                    if ! isAttrs group
-                    then toString group
-                    else
-                      group
-                      |> attrNames
-                      |> map (name: "${name} = <${typeOf (getAttr name group)}>;")
-                      |> concatStringsSep " "
-                      |> (x: "{ ${x} }");
-                in
-                  if group ? _name
-                  then group
-                  else
-                    throw ''
-                      Cerulean Nexus node "${nodeName}" is a member of an incorrectly structured group.
-                      Got "${got}" of primitive type "${typeOf group}".
-                      NOTE: Groups can be accessed via `self.groups.PATH.TO.YOUR.GROUP`
-                    '')
-                # add all inherited groups via _parent
-                |> map (let
-                  delegate = g:
-                    if g._parent == null
-                    then [g]
-                    else [g] ++ delegate (g._parent);
-                in
-                  delegate)
-                # flatten recursion result
-                |> concatLists
-                # find import location
-                |> map (group: findImport (root + "/groups/${group._name}"))
-                # filter by uniqueness
-                |> nt.prim.unique
-                # ignore missing groups
-                |> filter pathExists;
-            in
-              [../nixos-module host]
-              ++ groups
-              ++ node.extraModules
-              ++ nexus.extraModules;
-
-            # nix passes these to every single module
-            specialArgs = let
-              # XXX: NOTE: REF: https://github.com/NixOS/nixpkgs/blob/master/flake.nix#L57
-              # XXX: NOTE: lib.nixosSystem is defined here ^^^^
-              pkgConfig =
-                {
-                  inherit (node) system;
-                  # XXX: WARNING: TODO: i've stopped caring
-                  # XXX: WARNING: TODO: just figure out a better solution to pkgConfig
-                  config.allowUnfree = false;
-                  config.allowBroken = false;
-                  overlays =
-                    self.overlays
-                    ++ nexus.overlays
-                    ++ node.overlays
-                    ++ importOverlays root;
-                }
-                // nexus.extraPkgConfig # TODO: import
-                // node.extraPkgConfig; # TODO: import
-            in
+            specialArgs =
               nexus.specialArgs
               // node.specialArgs
-              // {
-                inherit root;
-                pkgs = import nixpkgs pkgConfig;
-                upkgs = import nixpkgs-unstable pkgConfig;
-              };
-          }
+              // {inherit root;};
+            modules =
+              [../nixos-module (findImport (root + "/hosts/${nodeName}"))]
+              ++ getGroupModules root nodeName node
+              ++ node.extraModules
+              ++ nexus.extraModules;
+          };
+        in
+          nixosDecl
       );
 
       deploy.nodes = mapNodes nexus.nodes (nodeName: node: let

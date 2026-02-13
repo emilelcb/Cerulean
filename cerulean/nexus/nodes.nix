@@ -31,8 +31,6 @@ in rec {
     extraModules = [];
     specialArgs = Terminal {};
     overlays = [];
-    # XXX: WARNING: extraPkgConfig is a terrible solution (but im lazy for now)
-    extraPkgConfig = Terminal {};
 
     deploy = {
       user = "root";
