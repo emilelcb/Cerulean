@@ -20,7 +20,7 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
 
-    nt.url = "github:emilelcb/nt";
+    nt.url = "github:cry128/nt";
 
     deploy-rs.url = "github:serokell/deploy-rs";
   };

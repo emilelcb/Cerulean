@@ -3,3 +3,6 @@ also rename `Cerulean` to `cerulean` in Nix to maintain the naming convention.
 
 Using `flake-parts` ensures Cerulean is usable without restricting
 yourself only to the Cerulean ecosystem.
+
+- [ ] extend the options.nixpkgs to allow any number of package repositories!!
+- [x] auto-propagate the same specialArgs for hosts to home-manager
