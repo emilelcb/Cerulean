@@ -21,6 +21,8 @@ mix.newMixture inputs (mixture: {
     ./nexus
   ];
 
+  version = "0.1.0";
+
   overlays = [
     # build deploy-rs as a package not from the flake input,
     # hence we can rely on a nixpkg binary cache.
