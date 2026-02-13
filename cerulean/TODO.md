@@ -1,2 +1,0 @@
-- [ ] extend the options.nixpkgs to allow any number of package repositories!!
-- [ ] auto-propagate the same specialArgs for hosts to home-manager
