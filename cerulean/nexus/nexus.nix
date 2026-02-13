@@ -187,10 +187,13 @@ in {
             specialArgs =
               nexus.specialArgs
               // node.specialArgs
-              // {inherit root;};
+              // {
+                inherit root;
+                inherit (node) system;
+              };
             modules =
               [../nixos-module (findImport (root + "/hosts/${nodeName}"))]
-              ++ getGroupModules root nodeName node
+              ++ (getGroupModules root nodeName node)
               ++ node.extraModules
               ++ nexus.extraModules;
           };
