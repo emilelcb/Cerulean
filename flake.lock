@@ -175,15 +175,15 @@
         "systems": "systems_2"
       },
       "locked": {
-        "lastModified": 1770911021,
-        "narHash": "sha256-8FcXBu0CjeeZeq3uW2h/c5AV+hqELuyPiHsUogOSmZM=",
-        "owner": "emilelcb",
+        "lastModified": 1770950436,
+        "narHash": "sha256-+h5jrsIJBea5P+rAk4OqUpScqnHYQTvCRUhgGv/MX34=",
+        "owner": "cry128",
         "repo": "nt",
-        "rev": "471e1617e8cc0bc749712a7a6af2b2e9f988ffbf",
+        "rev": "8725f5079f8f27b3faafeff90e5fc075d55e7d0a",
         "type": "github"
       },
       "original": {
-        "owner": "emilelcb",
+        "owner": "cry128",
         "repo": "nt",
         "type": "github"
       }
