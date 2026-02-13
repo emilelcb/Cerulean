@@ -13,7 +13,8 @@
 # limitations under the License.
 {
   root,
-  deploy-rs,
+  system,
+  _deploy-rs,
   ...
 } @ args: {
   imports = [
@@ -26,6 +27,6 @@
   ];
 
   environment.systemPackages = [
-    deploy-rs.packages.default
+    _deploy-rs.packages.${system}.default
   ];
 }

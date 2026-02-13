@@ -32,10 +32,18 @@ in {
       |> filter (x: pathExists (root + "/homes/${x}"))
       |> (x: lib.genAttrs x (y: import (root + "/homes/${y}")));
 
-    extraSpecialArgs = specialArgs;
+    # extraSpecialArgs = specialArgs;
     sharedModules = [
+      # user configuration
+      # (import (root + "/nixpkgs.nix"))
       (import (root + "/nixpkgs.nix"))
+      # options declarations
+      # (import ./nixpkgs.nix (args // {contextName = "homes";}))
       (import ./nixpkgs.nix (args // {contextName = "homes";}))
     ];
+
+    # disable home-manager trying anything fancy
+    # we control the pkgs now!!
+    # useGlobalPkgs = true;
   };
 }

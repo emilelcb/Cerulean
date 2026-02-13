@@ -192,6 +192,7 @@ in {
                 // {
                   inherit root specialArgs;
                   inherit (node) system;
+                  _deploy-rs = deploy-rs;
                 };
             in
               specialArgs;

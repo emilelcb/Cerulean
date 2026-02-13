@@ -66,25 +66,49 @@ in {
       decl
       |> mapAttrs (
         name: args:
-          assert args ? source
-          || abort ''
-            ${toString ./.}
-            `nixpkgs.channels.${contextName}.${name} missing required attribute "source"`
-          '';
-            ((removeAttrs args ["source"])
-              // {inherit system;})
-            |> import args.source
-            |> lib.mkOverride 200
+          lib.mkForce (
+            # builtins.trace "SAVE ME GOT NAME: ${name}" (
+            assert args ? source
+            || abort ''
+              ${toString ./.}
+              `nixpkgs.channels.${contextName}.${name}` missing required attribute "source"
+            '';
+              ((removeAttrs args ["source"])
+                // {inherit system;})
+              |> import args.source
+            # DEBUG: |> lib.mkOverride 200
+          )
+        # )
       );
   in {
     # NOTE: _module.args is a special option that allows us to
     # NOTE: set extend specialArgs from inside the modules.
     # "pkgs" is unique since the nix module system already handles it
-    _module.args = removeAttrs repos ["pkgs"];
+    # DEBUG: _module.args = lib.mkOverride 200 (
+    # _module.args = (
+    #   if contextName == "hosts"
+    #   then repos
+    #   else
+    #     assert (
+    #       repos
+    #       |> builtins.attrNames
+    #       |> map (x: "\"${x}\"")
+    #       |> builtins.concatStringsSep " "
+    #       |> (x: "FUCK YOU SO BAD: { ${x} }")
+    #       |> abort
+    #     );
+    #       removeAttrs repos ["pkgs"]
+    # );
+    _module.args = repos;
 
     nixpkgs =
       if contextName == "hosts"
       then {flake.source = lib.mkIf (decl ? pkgs) (lib.mkOverride 200 decl.pkgs.source);}
+      else if contextName == "homes"
+      then {
+        config = decl.pkgs.config or {};
+        overlays = decl.pkgs.overlays or {};
+      }
       else {};
   };
 }
