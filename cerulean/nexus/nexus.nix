@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 {
+  self,
   this,
   nt,
   lib,
@@ -184,15 +185,18 @@ in {
         nodeName: node: let
           nixosDecl = lib.nixosSystem {
             system = node.system;
-            specialArgs =
-              nexus.specialArgs
-              // node.specialArgs
-              // {
-                inherit root;
-                inherit (node) system;
-              };
+            specialArgs = let
+              specialArgs =
+                nexus.specialArgs
+                // node.specialArgs
+                // {
+                  inherit root specialArgs;
+                  inherit (node) system;
+                };
+            in
+              specialArgs;
             modules =
-              [../nixos-module (findImport (root + "/hosts/${nodeName}"))]
+              [self.nixosModules.default (findImport (root + "/hosts/${nodeName}"))]
               ++ (getGroupModules root nodeName node)
               ++ node.extraModules
               ++ nexus.extraModules;
