@@ -12,9 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 {
-  nt,
   lib,
+  system,
   config,
+  contextName,
   ...
 }: let
   inherit
@@ -22,62 +23,68 @@
     mapAttrs
     ;
 
-  inherit
-    (nt)
-    flip
-    ;
-
-  cfg = config.pkgsrc;
+  cfg = config.nixpkgs.channels;
 in {
-  options.pkgsrc = lib.mkOption {
-    type = lib.types.attrsOf lib.types.attrs;
+  options.nixpkgs.channels = lib.mkOption {
+    type = lib.types.attrsOf (lib.types.attrs);
     default = {};
-    description = "Declare and import custom package repositories.";
+    description = "Declare package repositories per module context (nixos, home-manager, etc)";
     example = {
-      "pkgs" = {
-        source = "inputs.nixpkgs";
-        system = "x86-64-linux";
-        config = {
-          allowUnfree = true;
-          allowBroken = false;
+      "homes" = {
+        "pkgs" = {
+          source = "inputs.nixpkgs";
+          system = "x86-64-linux";
+          config = {
+            allowUnfree = true;
+            allowBroken = false;
+          };
+        };
+        "upkgs" = {
+          source = "inputs.nixpkgs-unstable";
+          system = "x86-64-linux";
+          config = {
+            allowUnfree = true;
+            allowBroken = false;
+          };
         };
       };
     };
   };
 
+  # or abort ''
+  #         `nixpkgs.channels.${contextName}` does not exist, but neither does `nixpkgs.channels.default`!
+  #         A channel configuration must be declared for module context "${contextName}".
+  #       ''
+
   config = let
     # TODO: use lib.types.submodule to restrict what options
-    # TODO: can be given to pkgsrc
+    # TODO: can be given to `nixpkgs.channels.${moduleName}.${name}`
+    decl =
+      cfg.${contextName} or cfg.default;
+
     repos =
-      cfg
+      decl
       |> mapAttrs (
         name: args:
           assert args ? source
           || abort ''
-            ${./.}
-            `pkgsrc.${name} missing required attribute "source"`
+            ${toString ./.}
+            `nixpkgs.channels.${contextName}.${name} missing required attribute "source"`
           '';
-            args
-            |> flip removeAttrs ["source"]
+            ((removeAttrs args ["source"])
+              // {inherit system;})
             |> import args.source
+            |> lib.mkOverride 200
       );
   in {
     # NOTE: _module.args is a special option that allows us to
     # NOTE: set extend specialArgs from inside the modules.
     # "pkgs" is unique since the nix module system already handles it
-    _module.args =
-      removeAttrs repos ["pkgs"];
+    _module.args = removeAttrs repos ["pkgs"];
 
-    # nixpkgs =
-    #   lib.mkIf (cfg ? pkgs)
-    #   (let
-    #     pkgs = cfg.pkgs;
-    #   in
-    #     lib.mkForce (
-    #       (removeAttrs pkgs ["source"])
-    #       // {
-    #         flake.source = pkgs.source;
-    #       }
-    #     ));
+    nixpkgs =
+      if contextName == "hosts"
+      then {flake.source = lib.mkIf (decl ? pkgs) (lib.mkOverride 200 decl.pkgs.source);}
+      else {};
   };
 }

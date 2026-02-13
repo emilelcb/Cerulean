@@ -15,15 +15,27 @@
   root,
   config,
   lib,
+  specialArgs,
   ...
-} @ args: {
+} @ args: let
+  inherit
+    (builtins)
+    attrNames
+    filter
+    pathExists
+    ;
+in {
   home-manager = {
     users =
       config.users.users
-      |> builtins.attrNames
-      |> builtins.filter (x: builtins.pathExists (root + "/homes/${x}"))
+      |> attrNames
+      |> filter (x: pathExists (root + "/homes/${x}"))
       |> (x: lib.genAttrs x (y: import (root + "/homes/${y}")));
 
-    extraSpecialArgs = args;
+    extraSpecialArgs = specialArgs;
+    sharedModules = [
+      (import (root + "/nixpkgs.nix"))
+      (import ./nixpkgs.nix (args // {contextName = "homes";}))
+    ];
   };
 }

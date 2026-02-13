@@ -15,13 +15,18 @@
   mix,
   deploy-rs,
   ...
-} @ inputs:
-mix.newMixture inputs (mixture: {
+} @ args:
+mix.newMixture args (mixture: {
   includes.public = [
     ./nexus
   ];
 
   version = "0.1.0";
+
+  nixosModules = rec {
+    default = cerulean;
+    cerulean = ./nixos-module;
+  };
 
   overlays = [
     # build deploy-rs as a package not from the flake input,
