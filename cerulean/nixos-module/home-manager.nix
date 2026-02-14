@@ -37,10 +37,8 @@ in {
       extraSpecialArgs = {inherit root system;} // (specialArgs.inputs or {});
       sharedModules = [
         # user configuration
-        # (import (root + "/nixpkgs.nix"))
         (import (root + "/nixpkgs.nix"))
         # options declarations
-        # (import ./nixpkgs.nix (args // {contextName = "homes";}))
         (import ./nixpkgs.nix (args // {contextName = "homes";}))
       ];
 

@@ -21,7 +21,6 @@
   inherit
     (builtins)
     mapAttrs
-    typeOf
     ;
 
   cfg = config.nixpkgs.channels;
@@ -52,11 +51,6 @@ in {
     };
   };
 
-  # or abort ''
-  #         `nixpkgs.channels.${contextName}` does not exist, but neither does `nixpkgs.channels.default`!
-  #         A channel configuration must be declared for module context "${contextName}".
-  #       ''
-
   config = let
     # TODO: use lib.types.submodule to restrict what options
     # TODO: can be given to `nixpkgs.channels.${moduleName}.${name}`
@@ -68,7 +62,6 @@ in {
       |> mapAttrs (
         name: args:
           lib.mkForce (
-            # builtins.trace "SAVE ME GOT NAME: ${name}" (
             assert args ? source
             || abort ''
               ${toString ./.}
@@ -77,39 +70,31 @@ in {
               ((removeAttrs args ["source"])
                 // {inherit system;})
               |> import args.source
-            # DEBUG: |> lib.mkOverride 200
           )
-        # )
       );
   in {
     # NOTE: _module.args is a special option that allows us to
     # NOTE: set extend specialArgs from inside the modules.
-    # "pkgs" is unique since the nix module system already handles it
-    # DEBUG: _module.args = lib.mkOverride 200 (
-    # _module.args = (
-    #   if contextName == "hosts"
-    #   then repos
-    #   else
-    #     assert (
-    #       repos
-    #       |> builtins.attrNames
-    #       |> map (x: "\"${x}\"")
-    #       |> builtins.concatStringsSep " "
-    #       |> (x: "FUCK YOU SO BAD: { ${x} }")
-    #       |> abort
-    #     );
-    #       removeAttrs repos ["pkgs"]
-    # );
     _module.args = repos;
 
-    nixpkgs =
+    nixpkgs = let
+      defaultPkgs =
+        decl.default or (throw ''
+          Your `nixpkgs.nix` file does not declare a default package source.
+          Ensure you set `nixpkgs.channels.*.default = ...;`
+        '');
+    in
       if contextName == "hosts"
-      then {flake.source = lib.mkIf (decl ? pkgs) (lib.mkOverride 200 decl.pkgs.source);}
+      then {
+        flake.source = lib.mkOverride 200 defaultPkgs.source;
+        config = lib.mkOverride 200 defaultPkgs.config;
+      }
       else if contextName == "homes"
       then {
-        config = decl.pkgs.config or {};
+        # XXX: XXX: XXX: OH OH OH OMG, its because aurora never defines pkgs
+        config = lib.mkOverride 200 (defaultPkgs.config or {});
         # XXX: WARNING: TODO: modify options so overlays must always be given as the correct type
-        overlays = decl.pkgs.overlays or [];
+        overlays = lib.mkOverride 200 (defaultPkgs.overlays or []);
       }
       else {};
   };
