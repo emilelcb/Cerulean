@@ -21,6 +21,7 @@
   inherit
     (builtins)
     mapAttrs
+    typeOf
     ;
 
   cfg = config.nixpkgs.channels;
@@ -107,7 +108,8 @@ in {
       else if contextName == "homes"
       then {
         config = decl.pkgs.config or {};
-        overlays = decl.pkgs.overlays or {};
+        # XXX: WARNING: TODO: modify options so overlays must always be given as the correct type
+        overlays = decl.pkgs.overlays or [];
       }
       else {};
   };
