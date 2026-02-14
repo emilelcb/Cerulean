@@ -13,6 +13,7 @@
 # limitations under the License.
 {
   root,
+  system,
   config,
   lib,
   specialArgs,
@@ -25,25 +26,27 @@
     pathExists
     ;
 in {
-  home-manager = {
-    users =
-      config.users.users
-      |> attrNames
-      |> filter (x: pathExists (root + "/homes/${x}"))
-      |> (x: lib.genAttrs x (y: import (root + "/homes/${y}")));
+  config = {
+    home-manager = {
+      users =
+        config.users.users
+        |> attrNames
+        |> filter (x: pathExists (root + "/homes/${x}"))
+        |> (x: lib.genAttrs x (y: import (root + "/homes/${y}")));
 
-    # extraSpecialArgs = specialArgs;
-    sharedModules = [
-      # user configuration
-      # (import (root + "/nixpkgs.nix"))
-      (import (root + "/nixpkgs.nix"))
-      # options declarations
-      # (import ./nixpkgs.nix (args // {contextName = "homes";}))
-      (import ./nixpkgs.nix (args // {contextName = "homes";}))
-    ];
+      extraSpecialArgs = {inherit root system;} // (specialArgs.inputs or {});
+      sharedModules = [
+        # user configuration
+        # (import (root + "/nixpkgs.nix"))
+        (import (root + "/nixpkgs.nix"))
+        # options declarations
+        # (import ./nixpkgs.nix (args // {contextName = "homes";}))
+        (import ./nixpkgs.nix (args // {contextName = "homes";}))
+      ];
 
-    # disable home-manager trying anything fancy
-    # we control the pkgs now!!
-    # useGlobalPkgs = true;
+      # disable home-manager trying anything fancy
+      # we control the pkgs now!!
+      # useGlobalPkgs = true;
+    };
   };
 }
