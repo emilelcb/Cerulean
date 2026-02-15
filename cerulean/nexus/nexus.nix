@@ -16,7 +16,7 @@
   this,
   nt,
   lib,
-  deploy-rs,
+  inputs,
   ...
 }: let
   inherit
@@ -192,7 +192,7 @@ in {
                 // {
                   inherit root specialArgs;
                   inherit (node) system;
-                  _deploy-rs = deploy-rs;
+                  _deploy-rs = inputs.deploy-rs;
                 };
             in
               specialArgs;
@@ -220,7 +220,7 @@ in {
           user
           ;
 
-        nixosFor = system: deploy-rs.lib.${system}.activate.nixos;
+        nixosFor = system: inputs.deploy-rs.lib.${system}.activate.nixos;
       in {
         hostname = ssh.host;
 
@@ -256,7 +256,7 @@ in {
         };
       });
 
-      checks = mapAttrs (system: deployLib: deployLib.deployChecks deploy) deploy-rs.lib;
+      checks = mapAttrs (system: deployLib: deployLib.deployChecks deploy) inputs.deploy-rs.lib;
     };
   in
     outputs // customOutputs;
