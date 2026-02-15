@@ -22,7 +22,10 @@
 
     nt.url = "github:cry128/nt";
 
-    deploy-rs.url = "github:serokell/deploy-rs";
+    deploy-rs = {
+      url = "github:serokell/deploy-rs";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {
@@ -31,9 +34,9 @@
     ...
   } @ inputs:
     import ./cerulean
-    (inputs
-      // {
-        inherit (nixpkgs) lib;
-        inherit (nt) mix;
-      });
+    {
+      inherit inputs;
+      inherit (nixpkgs) lib;
+      inherit (nt) mix;
+    };
 }
