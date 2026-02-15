@@ -36,13 +36,14 @@
   };
 
   outputs = {
+    self,
     nixpkgs,
     nt,
     ...
   } @ inputs:
     import ./cerulean
     {
-      inherit inputs nt;
+      inherit inputs self nt;
       inherit (nixpkgs) lib;
       inherit (nt) mix;
     };
