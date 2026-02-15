@@ -30,7 +30,6 @@ in rec {
     groups = [];
     extraModules = [];
     specialArgs = Terminal {};
-    overlays = [];
 
     deploy = {
       user = "root";
