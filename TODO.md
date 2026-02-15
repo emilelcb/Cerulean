@@ -22,6 +22,12 @@
       it then returns instead of config)
 
 
+- [ ] what if we automated the process of replacing windows with Nix??
+      then push this to nixos-anywhere or nix-infect lmaooo
+
+- [ ] patch microvm so that acpi=off https://github.com/microvm-nix/microvm.nix/commit/b59a26962bb324cc0a134756a323f3e164409b72
+      cause otherwise 2GB causes a failure
+
 ```
 vms = {
   home-assistant = {

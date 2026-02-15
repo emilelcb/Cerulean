@@ -209,7 +209,7 @@ in {
                 (findImport (root + "/hosts/${nodeName}"))
 
                 inputs.home-manager.nixosModules.default
-                inputs.microvm.nixosModules.microvm
+                # inputs.microvm.nixosModules.microvm
               ]
               ++ (getGroupModules root nodeName node)
               ++ node.extraModules

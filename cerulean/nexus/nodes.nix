@@ -26,6 +26,7 @@ in rec {
       Terminal
       ;
   in {
+    enabled = true;
     system = "x86_64-linux"; # sane default (i hope...)
     groups = [];
     extraModules = [];
