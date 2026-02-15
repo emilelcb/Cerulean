@@ -16,10 +16,7 @@
 
   inputs = {
     systems.url = "github:nix-systems/default";
-
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
-    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
-
     nt.url = "github:cry128/nt";
 
     deploy-rs = {
