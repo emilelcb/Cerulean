@@ -1,8 +1,14 @@
-Allow `Cerulean.mkNexus` to be an alias for `flake-parts.lib.mkFlake`
-also rename `Cerulean` to `cerulean` in Nix to maintain the naming convention.
+- [ ] use the Nix module system instead of projectOnto for `cerulean.mkNexus`
+- [ ] find an alternative to `nix.settings.trusted-users` probably
+- [ ] add support for github:microvm-nix/microvm.nix
+- [ ] add support for sops-nix
 
-Using `flake-parts` ensures Cerulean is usable without restricting
-yourself only to the Cerulean ecosystem.
+- [ ] create an alternative to nixos-install called cerulean-install that
+      allows people to easily bootstrap new machines
 
-- [ ] extend the options.nixpkgs to allow any number of package repositories!!
-- [x] auto-propagate the same specialArgs for hosts to home-manager
+
+- [ ] rename nixos-modules/ to nixos/
+
+
+- [ ] add the ceru-build user
+- [ ] ensure all machines are in groups.all by default
