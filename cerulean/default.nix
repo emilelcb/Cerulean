@@ -25,7 +25,7 @@ mix.newMixture args (mixture: {
 
   nixosModules = rec {
     default = cerulean;
-    cerulean = ./nixos-module;
+    cerulean = ./nixos;
   };
 
   overlays = [
