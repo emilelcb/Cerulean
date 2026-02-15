@@ -96,7 +96,7 @@
     assert isAttrs nexus
     || abort ''
       Cerulean Nexus config must be provided as an attribute set, got "${typeOf nexus}" instead!
-      Ensure all the `nexus` declaration is an attribute set under your call to `cerulean.mkNexus`.
+      Ensure the `nexus` declaration is an attribute set under your call to `cerulean.mkNexus`.
     ''; let
       base = nt.projectOnto templateNexus nexus;
     in
@@ -135,10 +135,12 @@
     '';
     # ensure root group is always added
       (node.groups
-        ++ {
-          _parent = null;
-          _name = ROOT_GROUP_NAME;
-        })
+        ++ [
+          {
+            _parent = null;
+            _name = ROOT_GROUP_NAME;
+          }
+        ])
       # ensure all members are actually groups
       |> map (group: let
         got =
