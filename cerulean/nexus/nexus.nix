@@ -133,7 +133,12 @@
       Cerulean Nexus node "${nodeName}" does not declare group membership as a list, got "${typeOf node.groups}" instead!
       Ensure `nexus.nodes.${nodeName}.groups` is a list under your call to `cerulean.mkNexus`.
     '';
-      node.groups
+    # ensure root group is always added
+      (node.groups
+        ++ {
+          _parent = null;
+          _name = ROOT_GROUP_NAME;
+        })
       # ensure all members are actually groups
       |> map (group: let
         got =
