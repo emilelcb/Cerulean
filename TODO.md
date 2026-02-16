@@ -1,3 +1,5 @@
+- [ ] deploy port should default to the first port given to `services.openssh`
+
 - [ ] use the Nix module system instead of projectOnto for `cerulean.mkNexus`
 - [ ] create an alternative to nixos-install called cerulean-install that
       allows people to easily bootstrap new machines (and host it on dobutterfliescry.net)
@@ -10,11 +12,15 @@
 - [ ] it would be cool to enable/disable groups and hosts
 - [ ] find a standard for how nixpkgs.nix can have a different base per group
 
+- [ ] go through all flake inputs (recursively) and ENSURE we remove all duplicates by using follows!!
+
 - [X] rename nixos-modules/ to nixos/
 - [X] ensure all machines are in groups.all by default
 
 - [X] fix nixpkgs.nix not working (default not respected)
 - [X] remove dependence on nixpkgs
+
+- [ ] allow multiple privesc methods, the standard is pam_ssh_agent_auth
 
 ## Low Priority
 - [ ] rename extraModules to modules?
@@ -31,7 +37,11 @@
 - [ ] patch microvm so that acpi=off https://github.com/microvm-nix/microvm.nix/commit/b59a26962bb324cc0a134756a323f3e164409b72
       cause otherwise 2GB causes a failure
 
-```
+- [ ] rewrite the ceru cli in rust
+- [ ] make `ceru` do local and remote deployments
+
+```nix
+# REF: foxora
 vms = {
   home-assistant = {
     autostart = true;
