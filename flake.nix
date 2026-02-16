@@ -16,7 +16,11 @@
 
   inputs = {
     systems.url = "github:nix-systems/default";
-    # nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
+
+    # WARNING: nixpkgs is ONLY included so flakes using Cerulean can
+    # WARNING: force Cerulean's inputs to follow a specific revision.
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
+
     nt.url = "github:cry128/nt";
 
     home-manager = {
