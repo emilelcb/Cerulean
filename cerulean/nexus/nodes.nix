@@ -33,7 +33,7 @@ in rec {
       '');
   in {
     enabled = true;
-    system = "x86_64-linux"; # sane default (i hope...)
+    system = missing "its system architecture" "system";
     groups = [];
     extraModules = [];
     specialArgs = Terminal {};
