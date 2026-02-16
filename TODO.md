@@ -13,6 +13,9 @@
 - [X] rename nixos-modules/ to nixos/
 - [X] ensure all machines are in groups.all by default
 
+- [X] fix nixpkgs.nix not working (default not respected)
+- [X] remove dependence on nixpkgs
+
 ## Low Priority
 - [ ] rename extraModules to modules?
 - [ ] rename specialArgs to args?

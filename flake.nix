@@ -16,7 +16,7 @@
 
   inputs = {
     systems.url = "github:nix-systems/default";
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
+    # nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
     nt.url = "github:cry128/nt";
 
     home-manager = {
@@ -37,14 +37,12 @@
 
   outputs = {
     self,
-    nixpkgs,
     nt,
     ...
   } @ inputs:
     import ./cerulean
     {
       inherit inputs self nt;
-      inherit (nixpkgs) lib;
       inherit (nt) mix;
     };
 }

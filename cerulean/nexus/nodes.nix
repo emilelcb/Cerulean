@@ -25,12 +25,20 @@ in rec {
       (nt.naive.terminal)
       Terminal
       ;
+
+    missing = msg: path:
+      Terminal (abort ''
+        Each Cerulean Nexus node is required to specify ${msg}!
+        Ensure `nexus.${path}` exists under your call to `cerulean.mkNexus`.
+      '');
   in {
     enabled = true;
     system = "x86_64-linux"; # sane default (i hope...)
     groups = [];
     extraModules = [];
     specialArgs = Terminal {};
+
+    base = null;
 
     deploy = {
       user = "root";
@@ -67,7 +75,25 @@ in rec {
     in
       nt.projectOnto templateAttrs nodeAttrs;
 
-  mapNodes = nodes: f:
-    nodes
-    |> mapAttrs (nodeName: nodeAttrs: f nodeName (parseNode nodeName nodeAttrs));
+  mapNodes = nexus: f:
+    nexus.nodes
+    |> mapAttrs (nodeName: nodeAttrs: let
+      node = parseNode nodeName nodeAttrs;
+
+      # use per-node base or default to nexus base
+      base =
+        if node.base != null
+        then node.base
+        else if nexus.base != null
+        then nexus.base
+        else
+          abort ''
+            Cerulean cannot construct nexus node "${nodeName}" without a base package source.
+            Ensure `nexus.nodes.*.base` or `nexus.base` is a flake reference to the github:NixOS/nixpkgs repository.
+          '';
+    in
+      f {
+        inherit nodeName node;
+        lib = base.lib;
+      });
 }
