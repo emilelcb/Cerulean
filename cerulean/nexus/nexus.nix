@@ -15,7 +15,6 @@
   self,
   this,
   nt,
-  lib,
   inputs,
   ...
 }: let
@@ -50,13 +49,8 @@
       (nt.naive.terminal)
       Terminal
       ;
-
-    missing = msg: path:
-      Terminal (abort ''
-        Each Cerulean Nexus node is required to specify ${msg}!
-        Ensure `nexus.${path}` exists under your call to `cerulean.mkNexus`.
-      '');
   in {
+    base = null;
     extraModules = [];
     specialArgs = Terminal {};
 
@@ -188,8 +182,13 @@ in {
     customOutputs = removeAttrs decl ["nexus"];
 
     outputs = rec {
-      nixosConfigurations = mapNodes nexus.nodes (
-        nodeName: node: let
+      nixosConfigurations = mapNodes nexus (
+        {
+          lib,
+          nodeName,
+          node,
+          ...
+        }: let
           nixosDecl = lib.nixosSystem {
             system = node.system;
             specialArgs = let
@@ -219,7 +218,11 @@ in {
           nixosDecl
       );
 
-      deploy.nodes = mapNodes nexus.nodes (nodeName: node: let
+      deploy.nodes = mapNodes nexus ({
+        nodeName,
+        node,
+        ...
+      }: let
         inherit
           (node.deploy)
           activationTimeout
