@@ -52,7 +52,7 @@
   in {
     base = null;
     extraModules = [];
-    specialArgs = Terminal {};
+    args = Terminal {};
 
     groups = Terminal {};
     nodes = Terminal {};
@@ -189,19 +189,16 @@ in {
           node,
           ...
         }: let
-          nixosDecl = lib.nixosSystem {
+          nixosDecl = lib.nixosSystem rec {
             system = node.system;
-            specialArgs = let
-              specialArgs =
-                nexus.specialArgs
-                // node.specialArgs
-                // {
-                  inherit root specialArgs;
-                  inherit (node) system;
-                  _deploy-rs = inputs.deploy-rs;
-                };
-            in
-              specialArgs;
+            specialArgs =
+              nexus.args
+              // node.args
+              // {
+                inherit root specialArgs;
+                inherit (node) system;
+                _deploy-rs = inputs.deploy-rs;
+              };
             modules =
               [
                 self.nixosModules.default
