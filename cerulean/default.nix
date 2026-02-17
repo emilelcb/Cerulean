@@ -21,7 +21,7 @@ mix.newMixture args (mixture: {
     ./nexus
   ];
 
-  version = "0.2.1";
+  version = "0.2.2";
 
   nixosModules = rec {
     default = cerulean;
