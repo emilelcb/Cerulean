@@ -26,46 +26,38 @@
   cfg = config.nixpkgs.channels;
 in {
   options.nixpkgs.channels = lib.mkOption {
-    type = lib.types.attrsOf (lib.types.attrs);
+    type = lib.types.attrs;
     default = {};
-    description = "Declare package repositories per module context (nixos, home-manager, etc)";
+    description = "Declare package repositories";
     example = {
-      "homes" = {
-        "pkgs" = {
-          source = "inputs.nixpkgs";
-          system = "x86-64-linux";
-          config = {
-            allowUnfree = true;
-            allowBroken = false;
-          };
+      "pkgs" = {
+        source = "inputs.nixpkgs";
+        system = "x86-64-linux";
+        config = {
+          allowUnfree = true;
+          allowBroken = false;
         };
-        "upkgs" = {
-          source = "inputs.nixpkgs-unstable";
-          system = "x86-64-linux";
-          config = {
-            allowUnfree = true;
-            allowBroken = false;
-          };
+      };
+      "upkgs" = {
+        source = "inputs.nixpkgs-unstable";
+        system = "x86-64-linux";
+        config = {
+          allowUnfree = false;
+          allowBroken = true;
         };
       };
     };
   };
 
   config = let
-    # TODO: use lib.types.submodule to restrict what options
-    # TODO: can be given to `nixpkgs.channels.${moduleName}.${name}`
-    decl =
-      cfg.${contextName} or cfg.default;
-
     repos =
-      decl
+      cfg
       |> mapAttrs (
         name: args:
           lib.mkForce (
             assert args ? source
             || abort ''
-              ${toString ./.}
-              `nixpkgs.channels.${contextName}.${name}` missing required attribute "source"
+              `nixpkgs.channels.${name}` missing required attribute "source"
             '';
               ((removeAttrs args ["source"])
                 // {inherit system;})
@@ -78,8 +70,9 @@ in {
     _module.args = repos;
 
     nixpkgs = let
+      # XXX: TODO: would it work to use `base` instead of having default?
       defaultPkgs =
-        decl.default or (throw ''
+        cfg.default or (throw ''
           Your `nixpkgs.nix` file does not declare a default package source.
           Ensure you set `nixpkgs.channels.*.default = ...;`
         '');
@@ -91,9 +84,7 @@ in {
       }
       else if contextName == "homes"
       then {
-        # XXX: XXX: XXX: OH OH OH OMG, its because aurora never defines pkgs
         config = lib.mkOverride 200 (defaultPkgs.config or {});
-        # XXX: WARNING: TODO: modify options so overlays must always be given as the correct type
         overlays = lib.mkOverride 200 (defaultPkgs.overlays or []);
       }
       else {};
