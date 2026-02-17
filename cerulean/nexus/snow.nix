@@ -24,7 +24,7 @@
       types
       ;
   in {
-    extraModules = mkOption {
+    modules = mkOption {
       type = types.listOf types.path;
     };
     args = mkOption {

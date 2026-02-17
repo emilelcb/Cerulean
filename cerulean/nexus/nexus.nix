@@ -51,7 +51,7 @@
       ;
   in {
     base = null;
-    extraModules = [];
+    modules = [];
     args = Terminal {};
 
     groups = Terminal {};
@@ -208,8 +208,8 @@ in {
                 # inputs.microvm.nixosModules.microvm
               ]
               ++ (getGroupModules root nodeName node)
-              ++ node.extraModules
-              ++ nexus.extraModules;
+              ++ node.modules
+              ++ nexus.modules;
           };
         in
           nixosDecl

@@ -35,7 +35,7 @@ in rec {
     enabled = true;
     system = missing "its system architecture" "system";
     groups = [];
-    extraModules = [];
+    modules = [];
     args = Terminal {};
 
     base = null;
