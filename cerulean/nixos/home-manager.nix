@@ -13,10 +13,9 @@
 # limitations under the License.
 {
   root,
-  system,
   config,
   lib,
-  specialArgs,
+  _cerulean,
   ...
 } @ args: let
   inherit
@@ -34,17 +33,13 @@ in {
         |> filter (x: pathExists (root + "/homes/${x}"))
         |> (x: lib.genAttrs x (y: import (root + "/homes/${y}")));
 
-      extraSpecialArgs = {inherit root system;} // (specialArgs.inputs or {});
+      extraSpecialArgs = _cerulean.args;
       sharedModules = [
         # user configuration
         (import (root + "/nixpkgs.nix"))
         # options declarations
         (import ./nixpkgs.nix (args // {contextName = "homes";}))
       ];
-
-      # disable home-manager trying anything fancy
-      # we control the pkgs now!!
-      # useGlobalPkgs = true;
     };
   };
 }

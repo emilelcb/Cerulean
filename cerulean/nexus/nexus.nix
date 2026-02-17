@@ -20,6 +20,7 @@
 }: let
   inherit
     (builtins)
+    all
     attrNames
     concatLists
     concatStringsSep
@@ -184,33 +185,47 @@ in {
     outputs = rec {
       nixosConfigurations = mapNodes nexus (
         {
+          base,
           lib,
           nodeName,
           node,
           ...
         }: let
-          nixosDecl = lib.nixosSystem rec {
-            system = node.system;
-            specialArgs =
-              nexus.args
-              // node.args
-              // {
-                inherit root specialArgs;
-                inherit (node) system;
-                _deploy-rs = inputs.deploy-rs;
+          nixosDecl = let
+            userArgs = nexus.args // node.args;
+            ceruleanArgs = {
+              inherit root base;
+              inherit (node) system;
+              _cerulean = {
+                inherit inputs userArgs;
+                args = ceruleanArgs;
               };
-            modules =
-              [
-                self.nixosModules.default
-                (findImport (root + "/hosts/${nodeName}"))
+            };
+            specialArgs = assert (userArgs
+              |> attrNames
+              |> all (argName:
+                ! ceruleanArgs ? argName
+                || abort ''
+                  `specialArgs` are like super important to Cerulean my love... </3
+                  But `args.${argName}` is a reserved argument name :(
+                ''));
+              userArgs // ceruleanArgs;
+          in
+            lib.nixosSystem {
+              inherit (node) system;
+              inherit specialArgs;
+              modules =
+                [
+                  self.nixosModules.default
+                  (findImport (root + "/hosts/${nodeName}"))
 
-                inputs.home-manager.nixosModules.default
-                # inputs.microvm.nixosModules.microvm
-              ]
-              ++ (getGroupModules root nodeName node)
-              ++ node.modules
-              ++ nexus.modules;
-          };
+                  inputs.home-manager.nixosModules.default
+                  # inputs.microvm.nixosModules.microvm
+                ]
+                ++ (getGroupModules root nodeName node)
+                ++ node.modules
+                ++ nexus.modules;
+            };
         in
           nixosDecl
       );

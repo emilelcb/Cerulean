@@ -1,3 +1,7 @@
+- [ ] base should automatically be set as the default (dont do anything with the default)
+- [ ] try to remove common foot guns, ie abort if the user provides the home-manager or microvm nixosModules
+      since cerulean ALREADY provides these
+
 - [ ] deploy port should default to the first port given to `services.openssh`
 
 - [ ] use the Nix module system instead of projectOnto for `cerulean.mkNexus`

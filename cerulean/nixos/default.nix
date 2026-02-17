@@ -14,7 +14,7 @@
 {
   root,
   system,
-  _deploy-rs,
+  _cerulean,
   ...
 } @ args: {
   imports = [
@@ -26,7 +26,7 @@
     ./home-manager.nix
   ];
 
-  environment.systemPackages = [
-    _deploy-rs.packages.${system}.default
+  environment.systemPackages = with _cerulean.inputs; [
+    deploy-rs.packages.${system}.default
   ];
 }

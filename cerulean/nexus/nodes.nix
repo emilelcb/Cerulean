@@ -93,7 +93,7 @@ in rec {
           '';
     in
       f {
-        inherit nodeName node;
-        lib = base.lib;
+        inherit nodeName node base;
+        inherit (base) lib;
       });
 }
