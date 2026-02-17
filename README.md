@@ -3,10 +3,13 @@
 
 >[!WARNING]
 > ✨ **Under Construction** ✨
-> Cerulean has lived rent free in my head for the last 12 months.
-> I'm developing this project for personal use and especially
-> for use at my workplace. **Be not afraid!** It's only a matter
-> of time until Cerulean is ready for use!
+>
+> Cerulean is in an **experimental alpha release stage**.<br/>
+> **Be not afraid!** It's only a matter of time until Cerulean is ready for use!
+>
+> If you're curious about or want to use Cerulean then<br/>
+> *please please please* contact me on Bluesky [@dobutterfliescry.net](https://bsky.app/profile/dobutterfliescry.net).<br/>
+> (i would actually *melt* and fall in love with you...)
 
 # 🌌 🚀 Cerulean Nexus
 The culmination of 2 years designing better Nix flakes. Cerulean removes the boilerplate of managing
