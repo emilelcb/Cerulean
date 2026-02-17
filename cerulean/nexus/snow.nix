@@ -27,7 +27,7 @@
     extraModules = mkOption {
       type = types.listOf types.path;
     };
-    specialArgs = mkOption {
+    args = mkOption {
       type = types.attrs;
     };
 
