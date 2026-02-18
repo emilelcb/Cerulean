@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 {
+  base,
   lib,
   system,
   config,
@@ -78,13 +79,11 @@ in {
 
     nixpkgs =
       if contextName == "hosts"
-      then
-        # DEBUG: defaultPkgs
-        {
-          flake.source = lib.mkOverride 200 (defaultPkgs.source or null);
-          overlays = lib.mkOverride 200 (defaultPkgs.overlays or {});
-          config = lib.mkOverride 200 (defaultPkgs.config or {});
-        }
+      then {
+        flake.source = lib.mkOverride 200 base; # DEBUG: temp while getting base to work
+        overlays = lib.mkOverride 200 (defaultPkgs.overlays or {});
+        config = lib.mkOverride 200 (defaultPkgs.config or {});
+      }
       else if contextName == "homes"
       then {
         config = lib.mkOverride 200 (defaultPkgs.config or {});
