@@ -21,12 +21,12 @@ mix.newMixture args (mixture: {
     ./nexus
   ];
 
-  version = "0.2.2";
 
   nixosModules = rec {
     default = cerulean;
     cerulean = ./nixos;
   };
+  version = "0.2.3";
 
   overlays = [
     # build deploy-rs as a package not from the flake input,
