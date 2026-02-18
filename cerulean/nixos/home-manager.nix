@@ -25,21 +25,21 @@
     pathExists
     ;
 in {
-  config = {
-    home-manager = {
-      users =
-        config.users.users
-        |> attrNames
-        |> filter (x: pathExists (root + "/homes/${x}"))
-        |> (x: lib.genAttrs x (y: import (root + "/homes/${y}")));
+  home-manager = {
+    users =
+      config.users.users
+      |> attrNames
+      |> filter (x: pathExists (root + "/homes/${x}"))
+      |> (x:
+        lib.genAttrs x (y:
+          import (root + "/homes/${y}")));
 
-      extraSpecialArgs = _cerulean.args;
-      sharedModules = [
-        # user configuration
-        (import (root + "/nixpkgs.nix"))
-        # options declarations
-        (import ./nixpkgs.nix (args // {contextName = "homes";}))
-      ];
-    };
+    extraSpecialArgs = _cerulean.specialArgs;
+    sharedModules = [
+      # user configuration
+      (import (root + "/nixpkgs.nix"))
+      # options declarations
+      (import ./nixpkgs.nix (args // {contextName = "homes";}))
+    ];
   };
 }

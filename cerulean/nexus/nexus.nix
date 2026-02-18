@@ -197,8 +197,8 @@ in {
               inherit root base;
               inherit (node) system;
               _cerulean = {
-                inherit inputs userArgs;
-                args = ceruleanArgs;
+                inherit inputs userArgs ceruleanArgs;
+                specialArgs = userArgs // ceruleanArgs;
               };
             };
             specialArgs = assert (userArgs
@@ -209,7 +209,7 @@ in {
                   `specialArgs` are like super important to Cerulean my love... </3
                   But `args.${argName}` is a reserved argument name :(
                 ''));
-              userArgs // ceruleanArgs;
+              ceruleanArgs._cerulean.specialArgs;
           in
             lib.nixosSystem {
               inherit (node) system;

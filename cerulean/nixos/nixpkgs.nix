@@ -52,6 +52,7 @@ in {
   config = let
     repos =
       cfg
+      |> (xs: removeAttrs xs ["default"])
       |> mapAttrs (
         name: args:
           lib.mkForce (
@@ -59,29 +60,30 @@ in {
             || abort ''
               `nixpkgs.channels.${name}` missing required attribute "source"
             '';
-              ((removeAttrs args ["source"])
-                // {inherit system;})
-              |> import args.source
+              import args.source ({inherit system;} // (removeAttrs args ["source"]))
           )
       );
+
+    # XXX: TODO: would it work to use `base` instead of having default?
+    defaultPkgs =
+      cfg.default or (throw ''
+        Your `nixpkgs.nix` file does not declare a default package source.
+        Ensure you set `nixpkgs.channels.*.default = ...;`
+      '');
   in {
     # NOTE: _module.args is a special option that allows us to
     # NOTE: set extend specialArgs from inside the modules.
     _module.args = repos;
 
-    nixpkgs = let
-      # XXX: TODO: would it work to use `base` instead of having default?
-      defaultPkgs =
-        cfg.default or (throw ''
-          Your `nixpkgs.nix` file does not declare a default package source.
-          Ensure you set `nixpkgs.channels.*.default = ...;`
-        '');
-    in
+    nixpkgs =
       if contextName == "hosts"
-      then {
-        flake.source = lib.mkOverride 200 defaultPkgs.source;
-        config = lib.mkOverride 200 defaultPkgs.config;
-      }
+      then
+        # DEBUG: defaultPkgs
+        {
+          flake.source = lib.mkOverride 200 (defaultPkgs.source or null);
+          overlays = lib.mkOverride 200 (defaultPkgs.overlays or {});
+          config = lib.mkOverride 200 (defaultPkgs.config or {});
+        }
       else if contextName == "homes"
       then {
         config = lib.mkOverride 200 (defaultPkgs.config or {});
