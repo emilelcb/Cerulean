@@ -54,6 +54,7 @@
     base = null;
     modules = [];
     args = Terminal {};
+    homeManager = null;
 
     groups = Terminal {};
     nodes = Terminal {};
@@ -192,12 +193,17 @@ in {
           ...
         }: let
           nixosDecl = let
+            homeManager =
+              if node.homeManager != null
+              then node.homeManager
+              else nexus.homeManager;
+
             userArgs = nexus.args // node.args;
             ceruleanArgs = {
               inherit root base;
               inherit (node) system;
               _cerulean = {
-                inherit inputs userArgs ceruleanArgs;
+                inherit inputs userArgs ceruleanArgs homeManager;
                 specialArgs = userArgs // ceruleanArgs;
               };
             };
@@ -219,9 +225,9 @@ in {
                   self.nixosModules.default
                   (findImport (root + "/hosts/${nodeName}"))
 
-                  inputs.home-manager.nixosModules.default
                   # inputs.microvm.nixosModules.microvm
                 ]
+                ++ (homeManager.nixosModules.default or [])
                 ++ (getGroupModules root nodeName node)
                 ++ node.modules
                 ++ nexus.modules;
