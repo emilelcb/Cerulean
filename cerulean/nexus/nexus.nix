@@ -93,13 +93,13 @@
       Cerulean Nexus config must be provided as an attribute set, got "${typeOf nexus}" instead!
       Ensure the `nexus` declaration is an attribute set under your call to `cerulean.mkNexus`.
     ''; let
-      base = nt.projectOnto templateNexus nexus;
+      decl = nt.projectOnto templateNexus nexus;
     in
       # XXX: TODO: create a different version of nt.projectOnto that can actually
       # XXX: TODO: handle applying a transformation to the result of each datapoint
-      base
+      decl
       // {
-        groups = parseGroupDecl base.groups;
+        groups = parseGroupDecl decl.groups;
       };
 
   parseDecl = outputsBuilder: let
