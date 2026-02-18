@@ -27,8 +27,8 @@
 - [ ] allow multiple privesc methods, the standard is pam_ssh_agent_auth
 
 ## Low Priority
-- [ ] rename extraModules to modules?
-- [ ] rename specialArgs to args?
+- [X] rename extraModules to modules?
+- [X] rename specialArgs to args?
 
 - [ ] make an extension to the nix module system (different to mix)
       that allows transformations (ie a stop post config, ie outputs, which
@@ -43,6 +43,8 @@
 
 - [ ] rewrite the ceru cli in rust
 - [ ] make `ceru` do local and remote deployments
+
+- [ ] support `legacyImports` 
 
 ```nix
 # REF: foxora
