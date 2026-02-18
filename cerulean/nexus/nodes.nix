@@ -38,6 +38,8 @@ in rec {
     modules = [];
     args = Terminal {};
 
+    homeManager = null;
+
     base = null;
 
     deploy = {
