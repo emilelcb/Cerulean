@@ -73,7 +73,8 @@ in {
   in {
     # NOTE: _module.args is a special option that allows us to
     # NOTE: set extend specialArgs from inside the modules.
-    _module.args = repos;
+    # WARNING: pkgs is a reserved specialArg
+    _module.args = removeAttrs repos ["pkgs"];
 
     nixpkgs =
       if contextName == "hosts"
