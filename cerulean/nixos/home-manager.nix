@@ -25,6 +25,10 @@
     pathExists
     ;
 in {
+  imports = [
+    _cerulean.homeManager.nixosModules.default
+  ];
+
   home-manager = {
     users =
       config.users.users

@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 {
-  inputs,
   lib,
+  systems,
   ...
 }: {
   imports = [./shared.nix];
@@ -34,8 +34,8 @@
       '';
     };
 
-    system = types.nullOr mkOption {
-      type = types.enum inputs.systems;
+    system = mkOption {
+      type = types.nullOr (types.enum systems);
       default = null;
       example = "x86_64-linux";
       description = ''
@@ -44,8 +44,9 @@
     };
 
     groups = mkOption {
-      type = types.functionTo types.list;
-      default = [];
+      # TODO: write a custom group type that validates better than types.attrs lol
+      type = types.functionTo (types.listOf types.attrs);
+      default = groups: [];
       example = lib.literalExpression "( groups: [ groups.servers groups.secure-boot ] )";
       description = ''
         A function from the `groups` hierarchy to a list of groups this node inherits from.

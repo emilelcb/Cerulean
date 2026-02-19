@@ -28,7 +28,11 @@
       # options declarations
       (import ./nixpkgs.nix (args // {contextName = "hosts";}))
     ]
-    ++ lib.optional (_cerulean.homeManager != null) [./home-manager.nix];
+    ++ (
+      if _cerulean.homeManager != null
+      then [./home-manager.nix]
+      else []
+    );
 
   environment.systemPackages = with _cerulean.inputs; [
     deploy-rs.packages.${system}.default

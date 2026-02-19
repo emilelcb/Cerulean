@@ -11,7 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-{lib, ...}: {
+{
+  lib,
+  specialArgs,
+  ...
+}: {
   options.nodes = let
     inherit
       (lib)
@@ -24,26 +28,35 @@
         Cerulean node declarations.
       '';
       type = types.submoduleWith {
-        imports = [./shared.nix];
+        inherit specialArgs;
 
-        options = {
-          groups = mkOption {
-            type = types.attrs;
-            default = {};
-            example = lib.literalExpression "{ servers = { staging = {}; production = {}; }; }";
-            description = ''
-              Hierarchical groups that nodes can be a member of.
-            '';
-          };
+        modules = [
+          {
+            imports = [./shared.nix];
 
-          nodes = mkOption {
-            type = types.attrsOf (types.submoduleWith (import ./submodule.nix));
-            # example = { ... }; # TODO
-            description = ''
-              Node (host systems) declarations.
-            '';
-          };
-        };
+            options = {
+              groups = mkOption {
+                type = types.attrs;
+                default = {};
+                example = lib.literalExpression "{ servers = { staging = {}; production = {}; }; }";
+                description = ''
+                  Hierarchical groups that nodes can be a member of.
+                '';
+              };
+
+              nodes = mkOption {
+                type = types.attrsOf (types.submoduleWith {
+                  inherit specialArgs;
+                  modules = [(import ./submodule.nix)];
+                });
+                # example = { ... }; # TODO
+                description = ''
+                  Node (host systems) declarations.
+                '';
+              };
+            };
+          }
+        ];
       };
     };
 }

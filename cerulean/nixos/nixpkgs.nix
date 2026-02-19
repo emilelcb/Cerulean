@@ -75,19 +75,19 @@ in {
     # NOTE: _module.args is a special option that allows us to
     # NOTE: set extend specialArgs from inside the modules.
     # WARNING: pkgs is a reserved specialArg
-    _module.args = removeAttrs repos ["pkgs"];
+    _module.args = removeAttrs repos ["pkgs" "default"];
 
     nixpkgs =
       if contextName == "hosts"
       then {
-        flake.source = lib.mkOverride 200 base; # DEBUG: temp while getting base to work
-        overlays = lib.mkOverride 200 (defaultPkgs.overlays or {});
-        config = lib.mkOverride 200 (defaultPkgs.config or {});
+        flake.source = lib.mkForce base; # DEBUG: temp while getting base to work
+        overlays = lib.mkForce (defaultPkgs.overlays or {});
+        config = lib.mkForce (defaultPkgs.config or {});
       }
       else if contextName == "homes"
       then {
-        config = lib.mkOverride 200 (defaultPkgs.config or {});
-        overlays = lib.mkOverride 200 (defaultPkgs.overlays or []);
+        config = lib.mkForce (defaultPkgs.config or {});
+        overlays = lib.mkForce (defaultPkgs.overlays or []);
       }
       else {};
   };

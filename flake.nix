@@ -43,5 +43,6 @@
     {
       inherit inputs self nt;
       inherit (nt) mix;
+      systems = import inputs.systems;
     };
 }
