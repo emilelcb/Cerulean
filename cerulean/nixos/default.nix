@@ -13,6 +13,7 @@
 # limitations under the License.
 {
   root,
+  lib,
   system,
   _cerulean,
   ...
@@ -24,11 +25,7 @@
       # options declarations
       (import ./nixpkgs.nix (args // {contextName = "hosts";}))
     ]
-    ++ (
-      if _cerulean.homeManager != null
-      then [./home-manager.nix]
-      else []
-    );
+    ++ lib.optional (_cerulean.homeManager != null) [./home-manager.nix];
 
   environment.systemPackages = with _cerulean.inputs; [
     deploy-rs.packages.${system}.default
