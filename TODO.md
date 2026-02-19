@@ -1,10 +1,11 @@
-- [ ] base should automatically be set as the default (dont do anything with the default)
-- [ ] try to remove common foot guns, ie abort if the user provides the home-manager or microvm nixosModules
+- [ ] use the Nix module system instead of projectOnto for `cerulean.mkNexus`
+
+- [X] base should automatically be set as the default (dont do anything with the default)
+- [X] try to remove common foot guns, ie abort if the user provides the home-manager or microvm nixosModules
       since cerulean ALREADY provides these
 
 - [ ] deploy port should default to the first port given to `services.openssh`
 
-- [ ] use the Nix module system instead of projectOnto for `cerulean.mkNexus`
 - [ ] create an alternative to nixos-install called cerulean-install that
       allows people to easily bootstrap new machines (and host it on dobutterfliescry.net)
 
@@ -33,10 +34,6 @@
 - [ ] make an extension to the nix module system (different to mix)
       that allows transformations (ie a stop post config, ie outputs, which
       it then returns instead of config)
-
-
-- [ ] what if we automated the process of replacing windows with Nix??
-      then push this to nixos-anywhere or nix-infect lmaooo
 
 - [ ] patch microvm so that acpi=off https://github.com/microvm-nix/microvm.nix/commit/b59a26962bb324cc0a134756a323f3e164409b72
       cause otherwise 2GB causes a failure
