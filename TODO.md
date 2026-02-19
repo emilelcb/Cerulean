@@ -1,5 +1,9 @@
+## Next
 - [ ] use the Nix module system instead of projectOnto for `cerulean.mkNexus`
+- [ ] add `options.experimental` for snowflake
+- [ ] add `legacyImports` support
 
+## Queued
 - [X] base should automatically be set as the default (dont do anything with the default)
 - [X] try to remove common foot guns, ie abort if the user provides the home-manager or microvm nixosModules
       since cerulean ALREADY provides these

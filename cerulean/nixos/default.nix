@@ -20,6 +20,9 @@
 } @ args: {
   imports =
     [
+      # add support for `options.legacyImports`
+      # ./legacy-imports.nix
+
       # user configuration
       (import (root + "/nixpkgs.nix"))
       # options declarations
