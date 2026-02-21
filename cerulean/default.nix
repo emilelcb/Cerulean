@@ -17,14 +17,14 @@
   ...
 } @ args:
 mix.newMixture args (mixture: {
-  includes.public = [
-    ./nexus
-  ];
   submods.public = [
     ./snow
   ];
 
   version = "0.2.3";
+
+  # WARNING: legacy
+  mkFlake = mixture.snow.flake;
 
   overlays = [
     # build deploy-rs as a package not from the flake input,
