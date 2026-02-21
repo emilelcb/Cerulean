@@ -96,6 +96,15 @@
         '';
       };
 
+      rollback = mkOption {
+        type = types.bool;
+        default = true;
+        example = true;
+        description = ''
+          Enables both `autoRollback` and `magicRollback`.
+        '';
+      };
+
       autoRollback = mkOption {
         type = types.bool;
         default = true;
