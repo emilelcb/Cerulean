@@ -114,6 +114,15 @@
         '';
       };
 
+      magicRollback = mkOption {
+        type = types.bool;
+        default = true;
+        example = true;
+        description = ''
+          TODO: im fucking lazy
+        '';
+      };
+
       activationTimeout = mkOption {
         type = types.int;
         default = 500;
