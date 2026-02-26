@@ -23,3 +23,11 @@ Minor patches
 - cerulean no longer depends on `nixpkgs`,  `base` package set should be set instead
 - rename `extraModules` -> `modules`
 - rename `specialArgs` -> `args`
+
+## v0.2.3-alpha
+>[!TODO]
+> I've been too focused on upcoming changes...
+
+## v0.2.4-alpha
+- `homeManager` flake reference may now be specified in snowflake
+- ``
