@@ -13,6 +13,7 @@
 # limitations under the License.
 {
   root,
+  pkgs,
   system,
   _cerulean,
   ...
@@ -36,7 +37,11 @@
       else []
     );
 
-  environment.systemPackages = with _cerulean.inputs; [
-    deploy-rs.packages.${system}.default
-  ];
+  environment.systemPackages =
+    (with pkgs; [
+      sops
+    ])
+    ++ (with _cerulean.inputs; [
+      deploy-rs.packages.${system}.default
+    ]);
 }
