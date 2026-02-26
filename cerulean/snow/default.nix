@@ -130,7 +130,7 @@ in
           (node.deploy)
           ssh
           user
-          sudo
+          sudoCmd
           interactiveSudo
           remoteBuild
           rollback
@@ -149,7 +149,7 @@ in
           path = nixosFor node.system nixosConfigurations.${name};
 
           user = user;
-          sudo = sudo;
+          sudo = sudoCmd;
           interactiveSudo = interactiveSudo;
 
           fastConnection = false;
