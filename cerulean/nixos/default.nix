@@ -13,12 +13,11 @@
 # limitations under the License.
 {
   root,
-  lib,
   system,
   _cerulean,
   ...
 } @ args: {
-  imports =
+  imports = with _cerulean.inputs;
     [
       # add support for `options.legacyImports`
       # ./legacy-imports.nix
@@ -27,6 +26,9 @@
       (import (root + "/nixpkgs.nix"))
       # options declarations
       (import ./nixpkgs.nix (args // {contextName = "hosts";}))
+
+      sops-nix.nixosModules.sops
+      # microvm.nixosModules.microvm
     ]
     ++ (
       if _cerulean.homeManager != null

@@ -112,8 +112,6 @@ in
               [
                 self.nixosModules.default
                 (findImport (root + "/hosts/${name}"))
-
-                # inputs.microvm.nixosModules.microvm
               ]
               ++ (groupModules root)
               ++ node.modules
