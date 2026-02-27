@@ -1,0 +1,8 @@
+[package]
+name = "snow"
+description = "NixOS Derivative"
+version = "0.1.0"
+authors = ["_cry64 <them@dobutterfliescry.net>"]
+edition = "2024"
+
+[dependencies]
