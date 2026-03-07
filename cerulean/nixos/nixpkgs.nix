@@ -73,19 +73,23 @@ in {
     _module.args = removeAttrs repos ["pkgs" "base"];
 
     nixpkgs = let
-      nixpkgConfig = {
+      nixpkgsConfig = {
         config = lib.mkForce (basePkgs.config or {});
         overlays = lib.mkForce (basePkgs.overlays or []);
       };
-    in
-      if contextName == "hosts"
-      then
-        nixpkgConfig
+
+      nixpkgsHostsConfig =
+        nixpkgsConfig
         // {
           flake.source = lib.mkForce base;
-        }
+        };
+
+      nixpkgsHomesConfig = lib.mkIf (!config.home-manager.useGlobalPkgs) nixpkgsConfig;
+    in
+      if contextName == "hosts"
+      then nixpkgsHostsConfig
       else if contextName == "homes"
-      then nixpkgConfig
+      then nixpkgsHomesConfig
       else {};
   };
 }

@@ -62,8 +62,8 @@ in {
       users =
         config.users.users
         |> filterAttrs (name: value: value.manageHome && pathExists /${root}/homes/${name})
-        |> mapAttrs (name: _: {
-          imports = [import /${root}/homes/${name}];
+        |> mapAttrs (name: _: {...}: {
+          imports = [/${root}/homes/${name}];
 
           # per-user arguments
           _module.args.username = name;
@@ -73,7 +73,6 @@ in {
       sharedModules = [
         ../home
 
-        # user configuration
         (import /${root}/nixpkgs.nix)
         # options declarations
         (import ./nixpkgs.nix (args // {contextName = "homes";}))
