@@ -44,6 +44,8 @@ in {
       (import (root + "/nixpkgs.nix"))
       # options declarations
       (import ./nixpkgs.nix (args // {contextName = "homes";}))
+
+      ./home.nix
     ];
   };
 }
