@@ -86,9 +86,10 @@ in
 
           userArgs = nodes.args // node.args;
           ceruleanArgs = {
-            inherit systems root base;
+            inherit systems root base node;
             inherit (node) system;
             inherit (this) snow;
+            hostname = name;
 
             _cerulean = {
               inherit inputs userArgs ceruleanArgs homeManager;
@@ -128,7 +129,6 @@ in
           (node.deploy)
           ssh
           user
-          sudoCmd
           interactiveSudo
           remoteBuild
           rollback
@@ -140,14 +140,17 @@ in
 
         nixosFor = system: inputs.deploy-rs.lib.${system}.activate.nixos;
       in {
-        hostname = ssh.host;
+        hostname =
+          if ssh.host != null
+          then ssh.host
+          else "";
 
         profilesOrder = ["default"]; # profiles priority
         profiles.default = {
           path = nixosFor node.system nixosConfigurations.${name};
 
           user = user;
-          sudo = sudoCmd;
+          sudo = "sudo -u";
           interactiveSudo = interactiveSudo;
 
           fastConnection = false;

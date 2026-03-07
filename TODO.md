@@ -5,9 +5,6 @@
 - [ ] support hs system per dir, ie hosts/<name>/overlays or hosts/<name>/nixpkgs.nix
 
 ## Queued
-- [X] base should automatically be set as the default (dont do anything with the default)
-- [X] try to remove common foot guns, ie abort if the user provides the home-manager or microvm nixosModules
-      since cerulean ALREADY provides these
 - [ ] per node home configuration is a lil jank rn
 
 - [ ] deploy port should default to the first port given to `services.openssh`
