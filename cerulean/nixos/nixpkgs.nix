@@ -31,7 +31,7 @@ in {
     default = {};
     description = "Declare package repositories";
     example = {
-      "pkgs" = {
+      "npkgs" = {
         source = "inputs.nixpkgs";
         system = "x86-64-linux";
         config = {
@@ -53,7 +53,7 @@ in {
   config = let
     repos =
       cfg
-      |> (xs: removeAttrs xs ["default"])
+      |> (xs: removeAttrs xs ["base"])
       |> mapAttrs (
         name: args:
           lib.mkForce (
@@ -65,30 +65,27 @@ in {
           )
       );
 
-    # XXX: TODO: would it work to use `base` instead of having default?
-    defaultPkgs =
-      cfg.default or (throw ''
-        Your `nixpkgs.nix` file does not declare a default package source.
-        Ensure you set `nixpkgs.channels.*.default = ...;`
-      '');
+    basePkgs = cfg.base or {};
   in {
     # NOTE: _module.args is a special option that allows us to
     # NOTE: set extend specialArgs from inside the modules.
     # WARNING: pkgs is a reserved specialArg
-    _module.args = removeAttrs repos ["pkgs" "default"];
+    _module.args = removeAttrs repos ["pkgs" "base"];
 
-    nixpkgs =
+    nixpkgs = let
+      nixpkgConfig = {
+        config = lib.mkForce (basePkgs.config or {});
+        overlays = lib.mkForce (basePkgs.overlays or []);
+      };
+    in
       if contextName == "hosts"
-      then {
-        flake.source = lib.mkForce base; # DEBUG: temp while getting base to work
-        overlays = lib.mkForce (defaultPkgs.overlays or {});
-        config = lib.mkForce (defaultPkgs.config or {});
-      }
+      then
+        nixpkgConfig
+        // {
+          flake.source = lib.mkForce base;
+        }
       else if contextName == "homes"
-      then {
-        config = lib.mkForce (defaultPkgs.config or {});
-        overlays = lib.mkForce (defaultPkgs.overlays or []);
-      }
+      then nixpkgConfig
       else {};
   };
 }
