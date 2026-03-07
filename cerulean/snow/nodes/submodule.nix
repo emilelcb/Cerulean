@@ -59,22 +59,31 @@
         default = "root";
         example = "admin";
         description = ''
-          The user that the system derivation will be deployed to. The command specified in
+          The user that the system derivation will be built with. The command specified in
           `<node>.deploy.sudoCmd` will be used if `<node>.deploy.user` is not the
           same as `<node>.deploy.ssh.user` the same as above).
         '';
       };
 
-      sudoCmd = mkOption {
-        type = types.str;
-        default = "sudo -u";
-        example = "doas -u";
+      warnNonstandardDeployUser = mkOption {
+        type = types.bool;
+        default = true;
+        example = false;
         description = ''
-          Which sudo command to use. Must accept at least two arguments:
-          1. the user name to execute commands as
-          2. the rest is the command to execute
+          Disables the warning that shows when `deploy.ssh.user` is set to a non-standard value.
         '';
       };
+
+      # sudoCmd = mkOption {
+      #   type = types.str;
+      #   default = "sudo -u";
+      #   example = "doas -u";
+      #   description = ''
+      #     Which sudo command to use. Must accept at least two arguments:
+      #     1. the user name to execute commands as
+      #     2. the rest is the command to execute
+      #   '';
+      # };
 
       interactiveSudo = mkOption {
         type = types.bool;
@@ -145,8 +154,8 @@
 
       ssh = {
         host = mkOption {
-          type = types.str;
-          default = "";
+          type = types.nullOr types.str;
+          default = null;
           example = "dobutterfliescry.net";
           description = ''
             The host to connect to over ssh during deployment
@@ -168,6 +177,16 @@
           example = 2222;
           description = ''
             The port to connect to over ssh during deployment.
+          '';
+        };
+
+        publicKeys = mkOption {
+          type = types.listOf types.str;
+          default = [];
+          example = ["ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIeyZuUUmyUYrYaEJwEMvcXqZFYm1NaZab8klOyK6Imr me@puter"];
+          description = ''
+            SSH public keys that will be authorized to the deployment user.
+            This key is intended solely for deployment, allowing for fine-grained permission control.
           '';
         };
 

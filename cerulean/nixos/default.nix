@@ -13,29 +13,32 @@
 # limitations under the License.
 {
   root,
-  pkgs,
   system,
+  hostname,
+  node,
+  pkgs,
+  lib,
   _cerulean,
   ...
 } @ args: {
-  imports = with _cerulean.inputs;
+  imports =
     [
+      _cerulean.inputs.sops-nix.nixosModules.sops
+      # _cerulean.inputs.microvm.nixosModules.microvm
+
       # add support for `options.legacyImports`
       # ./legacy-imports.nix
 
-      # user configuration
-      (import /${root}/nixpkgs.nix)
-      # options declarations
+      # nixos options declarations
       (import ./nixpkgs.nix (args // {contextName = "hosts";}))
 
-      sops-nix.nixosModules.sops
-      # microvm.nixosModules.microvm
+      # user's nixpkg configuration
+      (import /${root}/nixpkgs.nix)
     ]
-    ++ (
-      if _cerulean.homeManager != null
-      then [./home.nix]
-      else []
-    );
+    # homemanager options declarations
+    ++ (lib.optional (_cerulean.homeManager != null) ./home.nix)
+    # remote deployment configuration
+    ++ (lib.optional (node.deploy.ssh.host != null) ./remote-deploy);
 
   networking.hostName = lib.mkDefault hostname;
 
