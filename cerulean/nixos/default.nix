@@ -37,6 +37,8 @@
       else []
     );
 
+  networking.hostName = lib.mkDefault hostname;
+
   environment.systemPackages =
     (with pkgs; [
       sops
