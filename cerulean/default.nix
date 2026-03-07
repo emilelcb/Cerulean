@@ -21,7 +21,7 @@ mix.newMixture args (mixture: {
     ./snow
   ];
 
-  version = "0.2.3";
+  version = "0.2.4-alpha";
 
   # WARNING: legacy
   mkFlake = mixture.snow.flake;
