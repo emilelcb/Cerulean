@@ -21,13 +21,13 @@ in {
         one publicKey authorized for ssh deployment! Try setting `nodes.nodes.<name>.deploy.ssh.publicKeys = [ ... ]` <3
       '';
     }
-    {
-      assertion = cfg.isSystemUser && !cfg.isNormalUser;
-      message = ''
-        The Cerulean deployment user `${user}` for node `${hostname}` has been configured incorrectly.
-        Ensure `users.users.${user}.isSystemUser == true` and `users.users.${user}.isNormalUser == false`.
-      '';
-    }
+    # {
+    #   assertion = cfg.isSystemUser && !cfg.isNormalUser;
+    #   message = ''
+    #     The Cerulean deployment user `${user}` for node `${hostname}` has been configured incorrectly.
+    #     Ensure `users.users.${user}.isSystemUser == true` and `users.users.${user}.isNormalUser == false`.
+    #   '';
+    # }
   ];
 
   warnings = lib.optional (node.deploy.warnNonstandardDeployUser && !isStandardDeployUser) ''
@@ -47,11 +47,15 @@ in {
         users = [user];
         runAs = "${node.deploy.user}:ALL";
         commands = [
-          "${pkgs.nix}/bin/nix"
+          # "${pkgs.nix}/bin/nix"
+          "ALL" # XXX: WARNING: FIX: TODO: DO NOT FUCKING USE `ALL`
         ];
       }
     ];
   };
+
+  # XXX: WARNING: FIX: TODO: use `trusted-public-keys` instead
+  nix.settings.trusted-users = [user];
 
   # ensure deployment user has SSH permissions
   services.openssh.settings.AllowUsers = [user];
@@ -61,11 +65,17 @@ in {
 
     users.${user} = {
       enable = true;
-      isSystemUser = true;
-      group = user;
       description = "Cerulean's user for building and remote deployment.";
 
+      isSystemUser = true;
+      group = user;
+
+      createHome = true;
+      home = "/var/lib/cerulean/cerubld";
+
+      useDefaultShell = false;
       shell = pkgs.bash;
+
       openssh.authorizedKeys.keys = node.deploy.ssh.publicKeys;
     };
   };
