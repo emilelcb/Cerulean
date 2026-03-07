@@ -1,5 +1,4 @@
 ## Next
-- [ ] use the Nix module system instead of projectOnto for `cerulean.mkNexus`
 - [ ] add `options.experimental` for snowflake
 - [ ] add `legacyImports` support
 
@@ -26,29 +25,19 @@
 
 - [ ] go through all flake inputs (recursively) and ENSURE we remove all duplicates by using follows!!
 
-- [X] rename nixos-modules/ to nixos/
-- [X] ensure all machines are in groups.all by default
-
-- [X] fix nixpkgs.nix not working (default not respected)
-- [X] remove dependence on nixpkgs
-
 - [ ] allow multiple privesc methods, the standard is pam_ssh_agent_auth
 
 ## Low Priority
-- [X] rename extraModules to modules?
-- [X] rename specialArgs to args?
-
 - [ ] make an extension to the nix module system (different to mix)
       that allows transformations (ie a stop post config, ie outputs, which
       it then returns instead of config)
+- [ ] support `legacyImports` (?)
 
 - [ ] patch microvm so that acpi=off https://github.com/microvm-nix/microvm.nix/commit/b59a26962bb324cc0a134756a323f3e164409b72
       cause otherwise 2GB causes a failure
 
-- [ ] rewrite the ceru cli in rust
-- [ ] make `ceru` do local and remote deployments
+- [ ] write the cerulean cli
 
-- [ ] support `legacyImports` 
 
 ```nix
 # REF: foxora
