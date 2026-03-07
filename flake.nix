@@ -1,4 +1,4 @@
-# Copyright 2025 Emile Clark-Boman
+# Copyright 2025-2026 _cry64 (Emile Clark-Boman)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -32,6 +32,11 @@
       url = "github:microvm-nix/microvm.nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {
@@ -43,5 +48,6 @@
     {
       inherit inputs self nt;
       inherit (nt) mix;
+      systems = import inputs.systems;
     };
 }
