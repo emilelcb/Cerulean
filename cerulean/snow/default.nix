@@ -111,7 +111,7 @@ in
             modules =
               [
                 self.nixosModules.default
-                (findImport (root + "/hosts/${name}"))
+                (findImport /${root}/hosts/${name})
               ]
               ++ (groupModules root)
               ++ node.modules

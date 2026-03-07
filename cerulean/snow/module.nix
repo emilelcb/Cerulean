@@ -18,6 +18,6 @@
 }: {
   imports = [
     ./nodes
-    (snow.findImport (root + "/snow"))
+    (snow.findImport /${root}/snow)
   ];
 }

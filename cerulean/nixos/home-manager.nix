@@ -33,15 +33,15 @@ in {
     users =
       config.users.users
       |> attrNames
-      |> filter (x: pathExists (root + "/homes/${x}"))
+      |> filter (x: pathExists /${root}/homes/${x})
       |> (x:
         lib.genAttrs x (y:
-          import (root + "/homes/${y}")));
+          import /${root}/homes/${y}));
 
     extraSpecialArgs = _cerulean.specialArgs;
     sharedModules = [
       # user configuration
-      (import (root + "/nixpkgs.nix"))
+      (import /${root}/nixpkgs.nix)
       # options declarations
       (import ./nixpkgs.nix (args // {contextName = "homes";}))
 

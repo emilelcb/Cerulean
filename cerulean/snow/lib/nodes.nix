@@ -65,7 +65,7 @@
     # flatten recursion result
     |> concatLists
     # find import location
-    |> map (group: nt.findImport (root + "/groups/${group._name}"))
+    |> map (group: nt.findImport (/${root}/groups/${group._name})
     # filter by uniqueness
     |> nt.prim.unique
     # ignore missing groups

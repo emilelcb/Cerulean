@@ -24,7 +24,7 @@
       # ./legacy-imports.nix
 
       # user configuration
-      (import (root + "/nixpkgs.nix"))
+      (import /${root}/nixpkgs.nix)
       # options declarations
       (import ./nixpkgs.nix (args // {contextName = "hosts";}))
 
