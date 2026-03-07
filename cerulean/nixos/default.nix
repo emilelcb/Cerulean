@@ -1,4 +1,4 @@
-# Copyright 2026 Emile Clark-Boman
+# Copyright 2025-2026 _cry64 (Emile Clark-Boman)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,16 +13,23 @@
 # limitations under the License.
 {
   root,
+  pkgs,
   system,
   _cerulean,
   ...
 } @ args: {
-  imports =
+  imports = with _cerulean.inputs;
     [
+      # add support for `options.legacyImports`
+      # ./legacy-imports.nix
+
       # user configuration
       (import (root + "/nixpkgs.nix"))
       # options declarations
       (import ./nixpkgs.nix (args // {contextName = "hosts";}))
+
+      sops-nix.nixosModules.sops
+      # microvm.nixosModules.microvm
     ]
     ++ (
       if _cerulean.homeManager != null
@@ -30,7 +37,11 @@
       else []
     );
 
-  environment.systemPackages = with _cerulean.inputs; [
-    deploy-rs.packages.${system}.default
-  ];
+  environment.systemPackages =
+    (with pkgs; [
+      sops
+    ])
+    ++ (with _cerulean.inputs; [
+      deploy-rs.packages.${system}.default
+    ]);
 }

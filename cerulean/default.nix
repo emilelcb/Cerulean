@@ -1,4 +1,4 @@
-# Copyright 2025 Emile Clark-Boman
+# Copyright 2025-2026 _cry64 (Emile Clark-Boman)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,20 +17,23 @@
   ...
 } @ args:
 mix.newMixture args (mixture: {
-  includes.public = [
-    ./nexus
+  submods.public = [
+    ./snow
   ];
 
-  version = "0.2.2";
+  version = "0.2.3";
 
-  nixosModules = rec {
-    default = cerulean;
-    cerulean = ./nixos;
-  };
+  # WARNING: legacy
+  mkFlake = mixture.snow.flake;
 
   overlays = [
     # build deploy-rs as a package not from the flake input,
     # hence we can rely on a nixpkg binary cache.
     inputs.deploy-rs.overlays.default
   ];
+
+  nixosModules = rec {
+    default = cerulean;
+    cerulean = ./nixos;
+  };
 })
