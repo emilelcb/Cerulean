@@ -12,17 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 {
-  root,
-  config,
-  lib,
   _cerulean,
+  config,
+  root,
+  lib,
   ...
 } @ args: let
   inherit
     (builtins)
-    attrNames
-    filter
     pathExists
+    ;
+
+  inherit
+    (lib)
+    filterAttrs
+    mapAttrs
     ;
 in {
   imports = [
@@ -49,13 +53,21 @@ in {
 
   config = {
     home-manager = {
+      useUserPackages = lib.mkDefault false;
+      useGlobalPkgs = lib.mkDefault true;
+
+      overwriteBackup = lib.mkDefault false;
+      backupFileExtension = lib.mkDefault "bak";
+
       users =
         config.users.users
-        |> attrNames
-        |> filter (x: x.manageHome && pathExists /${root}/homes/${x})
-        |> (x:
-          lib.genAttrs x (y:
-            import /${root}/homes/${y}));
+        |> filterAttrs (name: value: value.manageHome && pathExists /${root}/homes/${name})
+        |> mapAttrs (name: _: {
+          imports = [import /${root}/homes/${name}];
+
+          # per-user arguments
+          _module.args.username = name;
+        });
 
       extraSpecialArgs = _cerulean.specialArgs;
       sharedModules = [
