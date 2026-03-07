@@ -33,7 +33,7 @@
     ]
     ++ (
       if _cerulean.homeManager != null
-      then [./home-manager.nix]
+      then [./home.nix]
       else []
     );
 
